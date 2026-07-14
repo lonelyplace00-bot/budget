@@ -3,10 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="가계부">
-  <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <title>월 가계부</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -595,6 +591,11 @@
         <button class="cat-chip" onclick="selCat(this,'🎁','경조사')">🎁 경조사</button>
         <button class="cat-chip" onclick="selCat(this,'💡','기타')">💡 기타</button>
       </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px" id="payChips">
+        <button class="cat-chip sel" id="pay-cash"    onclick="selPay(this,'현금')">현금</button>
+        <button class="cat-chip"    id="pay-samsung"  onclick="selPay(this,'삼성카드')">삼성카드</button>
+        <button class="cat-chip"    id="pay-hyundai"  onclick="selPay(this,'현대카드')">현대카드</button>
+      </div>
       <div class="inp-row">
         <input class="inp" id="nameInp" type="text" placeholder="항목명" maxlength="20"
           onkeydown="if(event.key==='Enter')document.getElementById('amtInp').focus()">
@@ -901,29 +902,26 @@
       <div style="height:10px"></div>
     </div>
 
-    <!-- 합계 요약 -->
-    <div class="fixed-group">
-      <div class="fixed-item" style="border-top:1px solid var(--border2);padding-top:10px">
-        <span class="fi-date"></span>
-        <span class="fi-name" style="color:var(--green);font-weight:600">총 수입</span>
-        <span class="fi-amt" style="color:var(--green);font-weight:700">+3,900,000원</span>
+    <!-- 카드별 납부 -->
+    <div class="sec-title" style="margin-top:16px">💳 카드별 납부</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <div style="flex:1;background:var(--card2);border-radius:var(--radius);padding:14px 16px;border:1px solid rgba(96,165,250,0.2)">
+        <div style="font-size:11px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:6px">삼성카드</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px">49,290원</div>
+        <div style="font-size:11px;color:var(--sub)">통신비</div>
       </div>
-      <div class="fixed-item">
-        <span class="fi-date"></span>
-        <span class="fi-name" style="font-weight:600">총 고정지출</span>
-        <span class="fi-amt" style="color:var(--red);font-weight:700">-3,151,290원</span>
+      <div style="flex:1;background:var(--card2);border-radius:var(--radius);padding:14px 16px;border:1px solid rgba(167,139,250,0.2)">
+        <div style="font-size:11px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:6px">현대카드</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px">20,900원</div>
+        <div style="font-size:11px;color:var(--sub)">애플뮤직</div>
       </div>
     </div>
 
-    <!-- 동적 합계 -->
-    <div class="fixed-group" id="totalGroup" style="margin-top:8px">
-      <div class="fixed-g-title">전체 합계 (기존 + 추가)</div>
-      <div class="fixed-item" id="totalRow">
-        <span class="fi-date"></span>
-        <span class="fi-name" style="font-weight:700">총 고정 지출</span>
-        <span class="fi-amt fi-total" id="grandTotal">3,451,290원</span>
-      </div>
-      <div class="fixed-item" style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+    <!-- 카테고리별 분류 -->
+    <div class="fixed-group" id="categoryGroup" style="margin-top:8px">
+      <div class="fixed-g-title">카테고리별 고정지출</div>
+      <div id="categoryBreakdown"></div>
+      <div class="fixed-item" style="background:var(--card2)">
         <span class="fi-date"></span>
         <span class="fi-name" style="color:var(--yellow);font-weight:600">미납 고정지출</span>
         <span class="fi-amt" id="remainingFixedAmt" style="color:var(--yellow);font-weight:700">—</span>
@@ -1093,6 +1091,7 @@ const BASE_INCOME = 3900000; // 고정 수입 (월급 + 세입자)
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const _initDate = new Date(); let yr = _initDate.getFullYear(), mo = _initDate.getMonth();
 let catIcon = '🍚', catName = '식비';
+let payMethod = '현금';
 let incCatIcon = '🎬', incCatName = '촬영감독';
 let inputMode = 'exp'; // 'exp' | 'inc'
 
@@ -1601,19 +1600,20 @@ const CASHFLOW = [
   {id:'inc_wolse',  day:20,  name:'화곡 세입자 월세',            kind:'income', badge:'수입',  amount:850000},
   {id:'exp_jb',     day:1,   name:'JB 전북은행_2',              kind:'loan',   badge:'대출',  amount:500000, principal:333333, rate:9.07, initBal:13333320, loanKind:'equal-principal'},
   {id:'exp_nflx',   day:1,   name:'넷플릭스/디즈니+',            kind:'fix',    badge:'정기',  amount:6000},
-  {id:'exp_tel',    day:11,  name:'통신비',                     kind:'fix',    badge:'정기',  amount:49290},
-  {id:'exp_hana',   day:11,  name:'하나은행 (거치형 5.68%)',     kind:'loan',   badge:'대출',  amount:30000,  principal:0, rate:5.68, initBal:2780000, loanKind:'interest-only'},
+  {id:'exp_tel',    day:11,  name:'통신비 (삼성카드)',             kind:'fix',    badge:'정기',  amount:49290},
+  {id:'exp_hana',   day:11,  name:'하나은행 (5.68%)',            kind:'loan',   badge:'대출',  amount:30000,  principal:0, rate:5.68, initBal:2780000, loanKind:'partial-principal'},
   {id:'exp_sam',    day:13,  name:'삼성할부 신한 — 7월 완납 ✅', kind:'loan',   badge:'대출',  amount:132100, expires:{yr:2026, mo:6}},
-  {id:'exp_jeonse', day:14,  name:'전세자금대출 (명수)',          kind:'loan',   badge:'대출',  amount:75623,  rate:4.24, initBal:21000000, loanKind:'interest-only'},
-  {id:'exp_apple',  day:20,  name:'애플뮤직',                   kind:'fix',    badge:'정기',  amount:20900},
+  {id:'exp_jeonse', day:14,  name:'전세자금대출 (명수)',          kind:'loan',   badge:'대출',  amount:75623,  rate:4.24, initBal:27000000, loanKind:'interest-only'},
+  {id:'exp_shinhan_cl', day:17, name:'가계신용대출 (신한카드)',  kind:'loan',   badge:'대출',  amount:105538, principal:89880, rate:9.59, initBal:1960056, loanKind:'equal-principal'},
+  {id:'exp_apple',  day:20,  name:'애플뮤직 (현대카드)',           kind:'fix',    badge:'정기',  amount:20900},
   {id:'exp_ins',    day:23,  name:'삼성화재 (실비보험)',          kind:'fix',    badge:'정기',  amount:25000},
   {id:'exp_gye1',   day:25,  name:'계모임',                     kind:'save',   badge:'저축',  amount:50000},
   {id:'exp_gye2',   day:25,  name:'가족 계모임',                 kind:'save',   badge:'저축',  amount:60000},
   {id:'exp_jang',   day:28,  name:'한국장학재단 (학자금)',         kind:'loan',   badge:'대출',  amount:48000},
-  {id:'exp_kk1',    day:29,  name:'카카오뱅크 (거치형 8.18%)',   kind:'loan',   badge:'대출',  amount:25000,  principal:0, rate:8.18, initBal:2930000, loanKind:'interest-only'},
+  {id:'exp_kk1',    day:29,  name:'카카오뱅크 (8.18%)',          kind:'loan',   badge:'대출',  amount:25000,  principal:0, rate:8.18, initBal:2930000, loanKind:'partial-principal'},
   {id:'exp_chung',  day:30,  name:'청약통장',                   kind:'save',   badge:'저축',  amount:20000},
   {id:'exp_kk2',    day:99,  name:'카카오뱅크2 (새희망홀씨II 7.19%)', kind:'loan', badge:'대출', amount:600000, hi:true, principal:472230, rate:7.189, initBal:16527770, loanKind:'equal-principal'},
-  {id:'exp_trans',  day:99,  name:'교통비 (우리카드)',            kind:'fix',    badge:'정기',  amount:60000},
+  {id:'exp_trans',  day:99,  name:'교통비 (전월 교통비)',          kind:'fix',    badge:'정기',  amount:60000},
   {id:'exp_suhyup', day:30,  name:'수협 부동산담보대출 (4.2%) ⚠️ 27.08 원금상환', kind:'loan', badge:'대출', amount:620000, hi:true, principal:0, rate:4.2, initBal:177000000, loanKind:'interest-only'},
   {id:'exp_toss',   day:99,  name:'토스 이자',                  kind:'fix',    badge:'정기',  amount:80000},
   {id:'exp_util',   day:99,  name:'공과금',                     kind:'fix',    badge:'정기',  amount:60000},
@@ -1649,16 +1649,22 @@ function initLoanBalances() {
       changed = true;
     }
   });
+  // 전세자금대출 잔액 수정 (21,000,000 → 27,000,000)
+  if (bals['exp_jeonse'] === 21000000) {
+    bals['exp_jeonse'] = 27000000;
+    changed = true;
+  }
   if (changed) saveBalances(bals);
 }
 
 function toggleCheck(id) {
   const checked = loadChecked();
   const item = CASHFLOW.find(c => c.id === id);
-  const isLoan = item && item.kind === 'loan' && item.loanKind !== 'interest-only';
+  const isLoan = item && item.kind === 'loan' &&
+    (item.loanKind === 'equal-principal' || item.loanKind === 'partial-principal');
 
   if (checked.has(id)) {
-    // 체크 해제 → 잔액 원복 (저장된 차감액 그대로 복원)
+    // 체크 해제 → 저장된 차감액으로 잔액 원복
     checked.delete(id);
     if (isLoan) {
       const bals = loadBalances();
@@ -1671,20 +1677,29 @@ function toggleCheck(id) {
       }
     }
   } else {
-    // 체크 → 잔액 차감 (수동납부액 있으면 실원금 = 수동납부 - 이자)
+    // 체크 → 잔액 차감
     checked.add(id);
     if (isLoan) {
       const bals = loadBalances();
       const cur = bals[item.id] ?? item.initBal;
       if (cur != null) {
         let deduct;
-        const manPay = loadManualPay(item.id);
-        if (manPay !== null && item.rate) {
-          deduct = Math.max(0, manPay - calcInterest(cur, item.rate));
+        if (item.loanKind === 'partial-principal') {
+          // 납부금 - 이자 = 원금 차감 (이자 수동값 우선)
+          const manInt = loadManualInterest(item.id);
+          const interest = manInt !== null ? manInt : calcInterest(cur, item.rate);
+          deduct = Math.max(0, item.amount - interest);
         } else {
-          deduct = item.principal ?? item.amount;
+          // equal-principal: 수동납부액 있으면 실원금 = 수동납부 - 이자
+          const manPay = loadManualPay(item.id);
+          if (manPay !== null && item.rate) {
+            const manInt = loadManualInterest(item.id);
+            const interest = manInt !== null ? manInt : calcInterest(cur, item.rate);
+            deduct = Math.max(0, manPay - interest);
+          } else {
+            deduct = item.principal ?? item.amount;
+          }
         }
-        // 차감액 저장 (해제 시 정확히 복원하기 위해)
         localStorage.setItem(`cf_ded_${yr}_${mo}_${item.id}`, String(deduct));
         bals[item.id] = Math.max(0, cur - deduct);
         saveBalances(bals);
@@ -1700,11 +1715,56 @@ function editBal(id) {
   const bals = loadBalances();
   const el = document.getElementById('bal_' + id);
   if (!el) return;
+  const item = CASHFLOW.find(c => c.id === id);
   const cur = bals[id] != null ? bals[id] : '';
-  el.innerHTML = `<input class="cf-bal-input" id="bal_inp_${id}" type="number" value="${cur}" placeholder="잔액 입력 (원)"
-    onblur="saveBal('${id}')" onkeydown="if(event.key==='Enter')this.blur()">`;
+
+  let intHtml = '';
+  if (item && item.rate) {
+    const manInt = loadManualInterest(id);
+    const curBal = parseInt(cur) || 0;
+    const autoInt = curBal > 0 ? calcInterest(curBal, item.rate) : 0;
+    const intVal = manInt !== null ? manInt : '';
+    const resetBtn = manInt !== null
+      ? `<button onclick="saveManualInterest('${id}',null)" style="background:none;border:none;color:var(--orange);font-size:11px;cursor:pointer;padding:0 4px;font-family:inherit">↩자동</button>`
+      : '';
+    intHtml = `<div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+      <span style="font-size:11px;color:var(--sub);white-space:nowrap">이달 이자</span>
+      <input class="cf-bal-input" id="int_inp_${id}" type="number" value="${intVal}"
+        placeholder="자동: ${autoInt.toLocaleString()}원"
+        style="flex:1;border-color:${manInt !== null ? 'var(--orange)' : 'rgba(255,255,255,0.12)'}"
+        onkeydown="if(event.key==='Enter'){saveAllBal('${id}');this.blur()}">
+      ${resetBtn}
+    </div>`;
+  }
+
+  el.innerHTML = `
+    <input class="cf-bal-input" id="bal_inp_${id}" type="number" value="${cur}" placeholder="잔액 입력 (원)"
+      onkeydown="if(event.key==='Enter'){saveAllBal('${id}');this.blur()}">
+    ${intHtml}
+    <button onclick="saveAllBal('${id}')" style="margin-top:5px;padding:4px 12px;background:var(--purple);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">저장</button>`;
   const inp = document.getElementById('bal_inp_' + id);
   if (inp) { inp.focus(); inp.select(); }
+}
+
+function saveAllBal(id) {
+  // 잔액 저장
+  const balInp = document.getElementById('bal_inp_' + id);
+  if (balInp) {
+    const val = parseInt(balInp.value.replace(/,/g, ''));
+    if (!isNaN(val) && val >= 0) {
+      const bals = loadBalances();
+      bals[id] = val;
+      saveBalances(bals);
+    }
+  }
+  // 이자 저장
+  const intInp = document.getElementById('int_inp_' + id);
+  if (intInp && intInp.value !== '') {
+    const val = parseInt(intInp.value);
+    saveManualInterest(id, isNaN(val) ? null : val);
+    return; // saveManualInterest calls renderCashflow
+  }
+  renderCashflow();
 }
 
 function saveBal(id) {
@@ -1780,14 +1840,25 @@ function renderCashflow() {
       if (bal != null) {
         const balFmt = `<strong style="color:var(--text)">${bal.toLocaleString()}원</strong>`;
         if (item.rate && item.loanKind === 'equal-principal') {
-          const interest = calcInterest(bal, item.rate);
+          const manInt = loadManualInterest(item.id);
+          const interest = manInt !== null ? manInt : calcInterest(bal, item.rate);
           const total = item.principal + interest;
           const payLabel = isDone ? '다음달 납부 예정' : '이번달 납부 예정';
-          balText = `잔액 ${balFmt} · <span style="color:var(--sub2)">${payLabel}</span> 원금 ${item.principal.toLocaleString()} + 이자 ${interest.toLocaleString()} = <strong style="color:var(--red)">${total.toLocaleString()}원</strong>`;
-        } else if (item.rate && item.loanKind === 'interest-only') {
-          const interest = calcInterest(bal, item.rate);
+          const intBadge = manInt !== null ? `<span style="font-size:9px;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 3px;margin-left:2px">수동</span>` : '';
+          balText = `잔액 ${balFmt} · <span style="color:var(--sub2)">${payLabel}</span> 원금 ${item.principal.toLocaleString()} + 이자 ${interest.toLocaleString()}${intBadge} = <strong style="color:var(--red)">${total.toLocaleString()}원</strong>`;
+        } else if (item.rate && item.loanKind === 'partial-principal') {
+          const manInt = loadManualInterest(item.id);
+          const interest = manInt !== null ? manInt : calcInterest(bal, item.rate);
+          const principal = Math.max(0, item.amount - interest);
           const intLabel = isDone ? '다음달 이자' : '이달 이자';
-          balText = `잔액 ${balFmt} · ${intLabel} <strong style="color:var(--red)">${interest.toLocaleString()}원</strong>`;
+          const intBadge = manInt !== null ? `<span style="font-size:9px;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 3px;margin-left:2px">수동</span>` : '';
+          balText = `잔액 ${balFmt} · ${intLabel} <strong style="color:var(--red)">${interest.toLocaleString()}원</strong>${intBadge} · 원금차감 ${principal.toLocaleString()}원`;
+        } else if (item.rate && item.loanKind === 'interest-only') {
+          const manInt = loadManualInterest(item.id);
+          const interest = manInt !== null ? manInt : calcInterest(bal, item.rate);
+          const intLabel = isDone ? '다음달 이자' : '이달 이자';
+          const intBadge = manInt !== null ? `<span style="font-size:9px;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 3px;margin-left:2px">수동</span>` : '';
+          balText = `잔액 ${balFmt} · ${intLabel} <strong style="color:var(--red)">${interest.toLocaleString()}원</strong>${intBadge}`;
         } else {
           balText = `잔액 ${balFmt}`;
         }
@@ -1846,10 +1917,56 @@ function updateFixedTab() {
   const grandTotal = BASE_FIXED + extraTotal;
   const newBudget = Math.max(0, BASE_INCOME - grandTotal);
 
-  document.getElementById('grandTotal').textContent = fmt(grandTotal);
+  const gtEl = document.getElementById('grandTotal');
+  if (gtEl) gtEl.textContent = fmt(grandTotal);
   const nb = document.getElementById('newBudgetAmt');
-  nb.textContent = fmt(newBudget);
-  nb.style.color = newBudget > 200000 ? 'var(--green)' : newBudget > 0 ? 'var(--orange)' : 'var(--red)';
+  if (nb) {
+    nb.textContent = fmt(newBudget);
+    nb.style.color = newBudget > 200000 ? 'var(--green)' : newBudget > 0 ? 'var(--orange)' : 'var(--red)';
+  }
+
+  // 카테고리별 분류
+  const active = CASHFLOW.filter(item => {
+    if (!item.expires) return true;
+    return yr < item.expires.yr || (yr === item.expires.yr && mo <= item.expires.mo);
+  });
+  const loanTotal = active.filter(i => i.kind === 'loan').reduce((s,i) => s + i.amount, 0);
+  const fixTotal  = active.filter(i => i.kind === 'fix').reduce((s,i) => s + i.amount, 0);
+  const saveTotal = active.filter(i => i.kind === 'save').reduce((s,i) => s + i.amount, 0);
+
+  // 대출 잔액 총합계
+  const bals = loadBalances();
+  const loanItems = CASHFLOW.filter(i => i.kind === 'loan' && i.initBal);
+  const totalLoanBal = loanItems.reduce((s, i) => {
+    const bal = bals[i.id] !== undefined ? bals[i.id] : i.initBal;
+    return s + bal;
+  }, 0);
+
+  const catEl = document.getElementById('categoryBreakdown');
+  if (catEl) {
+    catEl.innerHTML = `
+      <div class="fixed-item">
+        <span class="fi-name" style="color:var(--red)">🏦 대출 납입</span>
+        <span class="fi-amt" style="color:var(--red);font-weight:600">${fmt(loanTotal)}</span>
+      </div>
+      <div class="fixed-item" style="background:var(--card2)">
+        <span class="fi-name" style="font-size:12px;color:var(--sub);padding-left:8px">잔액 총합</span>
+        <span class="fi-amt" style="color:var(--orange);font-weight:700">${fmt(totalLoanBal)}</span>
+      </div>
+      <div class="fixed-item">
+        <span class="fi-name" style="color:var(--blue)">📱 정기/구독</span>
+        <span class="fi-amt" style="color:var(--blue);font-weight:600">${fmt(fixTotal)}</span>
+      </div>
+      <div class="fixed-item">
+        <span class="fi-name" style="color:var(--green)">💰 저축</span>
+        <span class="fi-amt" style="color:var(--green);font-weight:600">${fmt(saveTotal)}</span>
+      </div>
+      ${extraTotal > 0 ? `<div class="fixed-item">
+        <span class="fi-name" style="color:var(--orange)">➕ 추가 항목</span>
+        <span class="fi-amt" style="color:var(--orange);font-weight:600">${fmt(extraTotal)}</span>
+      </div>` : ''}
+    `;
+  }
 
   const remaining = calcRemainingFixed();
   const remEl = document.getElementById('remainingFixedAmt');
@@ -1872,7 +1989,7 @@ function updateFixedTab() {
   list.innerHTML = `
     <div class="fixed-g-title">추가된 항목 (합계 ${fmt(extraTotal)})</div>
     ${userFixed.map(f => `
-      <div class="fixed-item">
+      <div class="fixed-item" id="fi-row-${f.id}">
         <span class="fi-date" style="font-size:10px">${f.date||'—'}</span>
         <span class="fi-name">
           ${f.name}
@@ -1882,23 +1999,81 @@ function updateFixedTab() {
         </span>
         <span class="fi-badge ${typeColors[f.type]||'b-fix'}">${f.type}</span>
         <span class="fi-amt">${fmt(f.amount)}</span>
-        <button class="del-btn" onclick="delFixed('${f.id}')" style="margin-left:4px">×</button>
+        <button onclick="editFixed('${f.id}')" style="background:none;border:none;color:var(--sub);font-size:14px;cursor:pointer;padding:2px 4px">✏️</button>
+        <button class="del-btn" onclick="delFixed('${f.id}')" style="margin-left:2px">×</button>
       </div>
     `).join('')}
   `;
 }
 
+function selPay(btn, method) {
+  document.querySelectorAll('#payChips .cat-chip').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  payMethod = method;
+}
+
 function renderItem(e) {
   const isIncome = e.kind === 'income';
-  return `<div class="exp-item">
+  const payColor = e.pay === '삼성카드' ? 'var(--blue)' : e.pay === '현대카드' ? 'var(--purple)' : null;
+  const payBadge = (e.pay && e.pay !== '현금' && payColor)
+    ? `<span style="font-size:10px;background:var(--card2);border:1px solid ${payColor}33;border-radius:6px;padding:1px 6px;color:${payColor};margin-left:4px">${e.pay}</span>`
+    : '';
+  return `<div class="exp-item" id="entry-${e.id}">
     <div class="exp-icon" style="background:${e.color}">${e.icon}</div>
     <div class="exp-info">
-      <div class="exp-name">${e.name}</div>
+      <div class="exp-name">${e.name}${payBadge}</div>
       <div class="exp-meta">${e.cat} · ${e.date}</div>
     </div>
     <div class="exp-amount" style="color:${isIncome?'var(--green)':'var(--red)'}">${isIncome?'+':'-'}${fmt(e.amount)}</div>
+    <button onclick="editEntry('${e.id}')" style="background:none;border:none;color:var(--sub);font-size:13px;cursor:pointer;padding:4px 6px">✏️</button>
     <button class="del-btn" onclick="delEntry('${e.id}')">×</button>
   </div>`;
+}
+
+function editEntry(id) {
+  const entries = load();
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  const row = document.getElementById('entry-' + id);
+  if (!row) return;
+  const curPay = e.pay || '현금';
+  row.innerHTML = `
+    <div style="display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap;padding:4px 0">
+      <input id="ee-name-${id}" value="${e.name}" placeholder="항목명"
+        style="flex:1;min-width:80px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px">
+      <input id="ee-amt-${id}" value="${e.amount}" type="number"
+        style="width:85px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px">
+      <select id="ee-pay-${id}"
+        style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 8px;color:var(--text);font-size:12px">
+        <option value="현금" ${curPay==='현금'?'selected':''}>현금</option>
+        <option value="삼성카드" ${curPay==='삼성카드'?'selected':''}>삼성카드</option>
+        <option value="현대카드" ${curPay==='현대카드'?'selected':''}>현대카드</option>
+      </select>
+      <button onclick="saveEditEntry('${id}')"
+        style="background:var(--accent);border:none;border-radius:8px;padding:6px 12px;color:#fff;font-size:13px;cursor:pointer;font-weight:600">저장</button>
+      <button onclick="updateUI()"
+        style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--sub);font-size:13px;cursor:pointer">취소</button>
+    </div>
+  `;
+  document.getElementById('ee-name-' + id).focus();
+}
+
+function saveEditEntry(id) {
+  const nameEl = document.getElementById('ee-name-' + id);
+  const amtEl  = document.getElementById('ee-amt-'  + id);
+  const payEl  = document.getElementById('ee-pay-'  + id);
+  if (!nameEl || !amtEl) return;
+  const name   = nameEl.value.trim();
+  const amount = parseInt(amtEl.value);
+  if (!name || !amount || amount <= 0) return;
+  const entries = load();
+  const idx = entries.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  entries[idx].name   = name;
+  entries[idx].amount = amount;
+  entries[idx].pay    = payEl ? payEl.value : '현금';
+  save(entries);
+  updateUI();
 }
 
 function setMode(mode) {
@@ -1934,9 +2109,11 @@ function addExp() {
   if (!amount || amount <= 0) { ai.focus(); ai.style.borderColor='var(--red)'; setTimeout(()=>ai.style.borderColor='',1200); return; }
   const colors = {'🍚':'rgba(249,115,22,.15)','🚌':'rgba(96,165,250,.15)','☕':'rgba(167,139,250,.15)','🛒':'rgba(34,197,94,.15)','🎮':'rgba(234,179,8,.15)','💊':'rgba(239,68,68,.15)','🎁':'rgba(251,191,36,.15)','💡':'rgba(148,163,184,.15)'};
   const entries = load();
-  entries.push({ id: Date.now().toString(), kind:'expense', name, amount, icon: catIcon, cat: catName, color: colors[catIcon]||'rgba(100,100,100,.15)', date: new Date().toLocaleDateString('ko-KR') });
+  entries.push({ id: Date.now().toString(), kind:'expense', name, amount, icon: catIcon, cat: catName, color: colors[catIcon]||'rgba(100,100,100,.15)', date: new Date().toLocaleDateString('ko-KR'), pay: payMethod });
   save(entries);
-  ni.value=''; ai.value=''; ni.focus();
+  ni.value=''; ai.value='';
+  selPay(document.getElementById('pay-cash'), '현금');
+  ni.focus();
   updateUI();
 }
 
@@ -1954,6 +2131,7 @@ function addIncome() {
 }
 
 function delEntry(id) {
+  if (!confirm('이 항목을 삭제할까요?')) return;
   save(load().filter(e => e.id !== id));
   updateUI();
 }
@@ -1989,6 +2167,43 @@ function addFixed() {
 function delFixed(id) {
   if (!confirm('이 고정지출 항목을 삭제할까요?')) return;
   saveFixed(loadFixed().filter(f => f.id !== id));
+  updateUI();
+}
+
+function editFixed(id) {
+  const fixed = loadFixed();
+  const f = fixed.find(x => x.id === id);
+  if (!f) return;
+  const row = document.getElementById('fi-row-' + id);
+  if (!row) return;
+  row.innerHTML = `
+    <div style="display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap;padding:4px 0">
+      <input id="edit-name-${id}" value="${f.name}" placeholder="항목명"
+        style="flex:1;min-width:100px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px">
+      <input id="edit-amt-${id}" value="${f.amount}" type="number" placeholder="금액"
+        style="width:90px;background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px">
+      <button onclick="saveEditFixed('${id}')"
+        style="background:var(--accent);border:none;border-radius:8px;padding:6px 12px;color:#fff;font-size:13px;cursor:pointer;font-weight:600">저장</button>
+      <button onclick="updateFixedTab()"
+        style="background:var(--card2);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--sub);font-size:13px;cursor:pointer">취소</button>
+    </div>
+  `;
+  document.getElementById('edit-name-' + id).focus();
+}
+
+function saveEditFixed(id) {
+  const nameEl = document.getElementById('edit-name-' + id);
+  const amtEl  = document.getElementById('edit-amt-'  + id);
+  if (!nameEl || !amtEl) return;
+  const name   = nameEl.value.trim();
+  const amount = parseInt(amtEl.value);
+  if (!name || !amount || amount <= 0) return;
+  const fixed = loadFixed();
+  const idx = fixed.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  fixed[idx].name   = name;
+  fixed[idx].amount = amount;
+  saveFixed(fixed);
   updateUI();
 }
 
@@ -2041,6 +2256,21 @@ function saveManualPay(loanId, amount) {
     localStorage.setItem(key, String(amount));
   }
   renderRoadmap();
+}
+
+function loadManualInterest(loanId) {
+  const v = localStorage.getItem(`cf_manint_${yr}_${mo}_${loanId}`);
+  return v !== null ? parseInt(v) : null;
+}
+
+function saveManualInterest(loanId, amount) {
+  const key = `cf_manint_${yr}_${mo}_${loanId}`;
+  if (amount === null || isNaN(amount) || amount <= 0) {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, String(amount));
+  }
+  renderCashflow();
 }
 
 function renderRoadmap() {
