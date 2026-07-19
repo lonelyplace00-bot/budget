@@ -890,6 +890,16 @@
   <div class="sub-panel active" id="mgmt-fixed">
   <div class="section">
 
+    <!-- 현재 통장 잔액 -->
+    <div style="background:var(--card2);border-radius:var(--radius);padding:14px 16px;border:1px solid rgba(96,165,250,0.12);margin-bottom:12px">
+      <div style="font-size:11px;color:var(--sub);letter-spacing:.03em;margin-bottom:6px">💳 현재 통장 잔액</div>
+      <div style="display:flex;align-items:center;gap:8px" id="bankBalContainer">
+        <span style="font-size:22px;font-weight:700;color:var(--sub)">—</span>
+        <button onclick="editBankBal()" style="background:none;border:none;color:var(--sub);font-size:13px;cursor:pointer;padding:4px">✏️</button>
+      </div>
+      <div id="bankBalDate" style="font-size:10px;color:var(--sub2);margin-top:4px"></div>
+    </div>
+
     <!-- 월 현금흐름 -->
     <div class="sec-title">📅 월 현금흐름</div>
     <div style="font-size:11px;color:var(--sub);margin-bottom:10px">초록 수입 · 파랑 저축 · <span style="color:var(--orange)">주황 50만↑</span></div>
@@ -1181,6 +1191,7 @@ function updateUI() {
 
   // 고정지출 탭 업데이트
   updateFixedTab();
+  updateBankBal();
 
   // 카테고리 차트
   renderChart(expenses);
@@ -1605,6 +1616,8 @@ const CASHFLOW = [
   {id:'exp_sam',    day:13,  name:'삼성할부 신한 — 7월 완납 ✅', kind:'loan',   badge:'대출',  amount:132100, expires:{yr:2026, mo:6}},
   {id:'exp_jeonse', day:14,  name:'전세자금대출 (명수)',          kind:'loan',   badge:'대출',  amount:75623,  rate:4.24, initBal:27000000, loanKind:'interest-only'},
   {id:'exp_shinhan_cl', day:17, name:'가계신용대출 (신한카드)',  kind:'loan',   badge:'대출',  amount:105538, principal:89880, rate:9.59, initBal:1960056, loanKind:'equal-principal'},
+  {id:'bill_hyundai', day:12, name:'현대카드 청구',               kind:'card_bill', badge:'카드', amount:0},
+  {id:'bill_samsung', day:13, name:'삼성카드 청구',               kind:'card_bill', badge:'카드', amount:0},
   {id:'exp_apple',  day:20,  name:'애플뮤직 (현대카드)',           kind:'fix',    badge:'정기',  amount:20900},
   {id:'exp_ins',    day:23,  name:'삼성화재 (실비보험)',          kind:'fix',    badge:'정기',  amount:25000},
   {id:'exp_gye1',   day:25,  name:'계모임',                     kind:'save',   badge:'저축',  amount:50000},
@@ -1655,6 +1668,16 @@ function initLoanBalances() {
     changed = true;
   }
   if (changed) saveBalances(bals);
+
+  // 8월 카드 청구 초기값 (7월 사용분, 수동 입력값 없을 때만)
+  if (!localStorage.getItem('cf_cardbill_2026_7_bill_samsung'))
+    localStorage.setItem('cf_cardbill_2026_7_bill_samsung', '307980');
+  if (!localStorage.getItem('cf_cardbill_2026_7_bill_hyundai'))
+    localStorage.setItem('cf_cardbill_2026_7_bill_hyundai', '201440');
+
+  // 통장 잔액 초기값 (없을 때만)
+  if (!localStorage.getItem('bank_balance'))
+    localStorage.setItem('bank_balance', JSON.stringify({ amount: 1432188, date: '2026. 7. 19.' }));
 }
 
 function toggleCheck(id) {
@@ -1793,15 +1816,20 @@ function renderCashflow() {
     remEl.style.color = remaining > 2000000 ? 'var(--red)' : remaining > 500000 ? 'var(--yellow)' : 'var(--green)';
   }
 
+  const customDays = loadCustomDays();
   container.innerHTML = CASHFLOW.filter(item => {
     if (!item.expires) return true;
     return yr < item.expires.yr || (yr === item.expires.yr && mo <= item.expires.mo);
   }).sort((a, b) => {
-    const da = a.day === 99 ? 100 : a.day;
-    const db = b.day === 99 ? 100 : b.day;
+    const ea = customDays[a.id] ?? a.day;
+    const eb = customDays[b.id] ?? b.day;
+    const da = ea === 99 ? 100 : ea;
+    const db = eb === 99 ? 100 : eb;
     return da - db;
   }).map(item => {
-    const dayLabel = item.day === 99 ? '말일' : item.day + '일';
+    const effectiveDay = customDays[item.id] ?? item.day;
+    const dayLabel = effectiveDay === 99 ? '말일' : effectiveDay + '일';
+    const dayModified = customDays[item.id] != null && customDays[item.id] !== item.day;
     // 원금균등 대출은 수동납부액 있으면 그 금액 표시
     let displayAmt = item.amount;
     let manualBadge = '';
@@ -1819,10 +1847,36 @@ function renderCashflow() {
     if (item.kind === 'income') {
       return `<div class="fixed-item" style="background:var(--green-bg);border-radius:8px;margin:3px 0">
         <span style="width:28px"></span>
-        <span class="fi-date" style="color:var(--green)">${dayLabel}</span>
+        <span class="fi-date" id="day_${item.id}" onclick="editDay('${item.id}')" style="cursor:pointer;color:var(--green);${dayModified?'text-decoration:underline dotted':''}">${dayLabel}</span>
         <span class="fi-name" style="color:var(--green);font-weight:600">${item.name}</span>
         <span class="fi-badge" style="background:rgba(34,197,94,.15);color:#22C55E;border:1px solid rgba(34,197,94,.3)">수입</span>
         <span class="fi-amt" style="color:var(--green);font-weight:700">+${amtStr}원</span>
+      </div>`;
+    }
+
+    // ── 카드 청구 행 ──
+    if (item.kind === 'card_bill') {
+      const { amount, isManual } = getCardBillAmt(item.id);
+      const isDoneCard = checked.has(item.id);
+      const cardColor = item.id === 'bill_samsung' ? 'var(--blue)' : 'var(--purple)';
+      const prevMoLabel = mo === 0 ? '12월' : mo + '월';
+      const manBadge = isManual
+        ? `<span style="font-size:9px;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 3px;margin-left:3px">수동</span>`
+        : `<span style="font-size:9px;color:var(--sub2);background:var(--card2);border-radius:3px;padding:1px 3px;margin-left:3px">전월합산</span>`;
+      return `<div class="fixed-item ${isDoneCard ? 'cf-item-done' : ''}">
+        <button class="cf-check ${isDoneCard ? 'done' : ''}" onclick="toggleCheck('${item.id}')">✓</button>
+        <div class="cf-wrap">
+          <div class="cf-row">
+            <span class="fi-date" id="day_${item.id}" onclick="editDay('${item.id}')" style="cursor:pointer;${dayModified?'text-decoration:underline dotted;color:var(--purple)':''}">${dayLabel}</span>
+            <span class="fi-name" style="color:${cardColor};font-weight:600">${item.name}${manBadge}</span>
+            <span class="fi-badge" style="background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)">${item.badge}</span>
+            <span class="fi-amt" style="color:var(--red)">-${amount.toLocaleString()}원</span>
+          </div>
+          <div class="cf-bal" id="cardbill_${item.id}">
+            <span style="font-size:11px;color:var(--sub)">${prevMoLabel} 카드 사용액 합산</span>
+            <button class="cf-edit-btn" onclick="editCardBill('${item.id}')">✏️</button>
+          </div>
+        </div>
       </div>`;
     }
 
@@ -1874,7 +1928,7 @@ function renderCashflow() {
       <button class="cf-check ${isDone ? 'done' : ''}" onclick="toggleCheck('${item.id}')">✓</button>
       <div class="cf-wrap">
         <div class="cf-row">
-          <span class="fi-date">${dayLabel}</span>
+          <span class="fi-date" id="day_${item.id}" onclick="editDay('${item.id}')" style="cursor:pointer;${dayModified?'text-decoration:underline dotted;color:var(--purple)':''}">${dayLabel}</span>
           <span class="fi-name">${item.name}</span>
           <span class="fi-badge ${badgeClass}">${item.badge}</span>
           <span class="fi-amt" style="color:${amtColor}">-${amtStr}원${manualBadge}</span>
@@ -1902,6 +1956,10 @@ function calcRemainingFixed() {
     return yr < item.expires.yr || (yr === item.expires.yr && mo <= item.expires.mo);
   }).forEach(item => {
     if (item.kind === 'income') return;
+    if (item.kind === 'card_bill') {
+      if (!checked.has(item.id)) remaining += getCardBillAmt(item.id).amount;
+      return;
+    }
     if (!checked.has(item.id)) remaining += item.amount;
   });
   // Add user-added fixed items (not in CASHFLOW, so always count as remaining)
@@ -2256,6 +2314,122 @@ function saveManualPay(loanId, amount) {
     localStorage.setItem(key, String(amount));
   }
   renderRoadmap();
+}
+
+// ── 통장 잔액 ──
+function updateBankBal() {
+  const container = document.getElementById('bankBalContainer');
+  const dateEl = document.getElementById('bankBalDate');
+  if (!container) return;
+  const data = JSON.parse(localStorage.getItem('bank_balance') || 'null');
+  const color = !data ? 'var(--sub)' : data.amount < 500000 ? 'var(--red)' : data.amount < 1500000 ? 'var(--orange)' : 'var(--blue)';
+  container.innerHTML = `
+    <span style="font-size:22px;font-weight:700;color:${color};flex:1">${data ? data.amount.toLocaleString() + '원' : '—'}</span>
+    <button onclick="editBankBal()" style="background:none;border:none;color:var(--sub);font-size:13px;cursor:pointer;padding:4px">✏️</button>`;
+  if (dateEl) dateEl.textContent = data ? data.date + ' 기준' : '';
+}
+function editBankBal() {
+  const container = document.getElementById('bankBalContainer');
+  if (!container) return;
+  const data = JSON.parse(localStorage.getItem('bank_balance') || 'null');
+  container.innerHTML = `
+    <input id="bankbal_inp" type="number" value="${data ? data.amount : ''}" placeholder="잔액 입력 (원)"
+      style="flex:1;height:36px;background:rgba(255,255,255,0.06);border:1.5px solid var(--blue);border-radius:8px;padding:0 12px;color:var(--text);font-size:18px;font-weight:700;font-family:inherit;outline:none"
+      onblur="saveBankBalInput()" onkeydown="if(event.key==='Enter')this.blur()">`;
+  document.getElementById('bankbal_inp')?.focus();
+}
+function saveBankBalInput() {
+  const inp = document.getElementById('bankbal_inp');
+  if (!inp) return;
+  const val = parseInt(inp.value.replace(/,/g, ''));
+  if (!isNaN(val) && val >= 0) {
+    const today = new Date().toLocaleDateString('ko-KR');
+    localStorage.setItem('bank_balance', JSON.stringify({ amount: val, date: today }));
+  }
+  updateBankBal();
+}
+
+// ── 카드 청구 ──
+function loadCardBill(cardId) {
+  const v = localStorage.getItem(`cf_cardbill_${yr}_${mo}_${cardId}`);
+  return v !== null ? parseInt(v) : null;
+}
+function saveCardBill(cardId, amount) {
+  const key = `cf_cardbill_${yr}_${mo}_${cardId}`;
+  if (amount === null || isNaN(amount)) localStorage.removeItem(key);
+  else localStorage.setItem(key, String(amount));
+  renderCashflow();
+}
+function calcAutoCardBill(payMethod) {
+  const prevMo = mo === 0 ? 11 : mo - 1;
+  const prevYr = mo === 0 ? yr - 1 : yr;
+  const prevEntries = JSON.parse(localStorage.getItem(`bgt_${prevYr}_${prevMo}`) || '[]');
+  return prevEntries.filter(e => e.kind === 'expense' && e.pay === payMethod).reduce((s, e) => s + e.amount, 0);
+}
+function getCardBillAmt(cardId) {
+  const manual = loadCardBill(cardId);
+  if (manual !== null) return { amount: manual, isManual: true };
+  const payMethod = cardId === 'bill_samsung' ? '삼성카드' : '현대카드';
+  return { amount: calcAutoCardBill(payMethod), isManual: false };
+}
+function editCardBill(cardId) {
+  const el = document.getElementById('cardbill_' + cardId);
+  if (!el) return;
+  const { amount } = getCardBillAmt(cardId);
+  const payMethod = cardId === 'bill_samsung' ? '삼성카드' : '현대카드';
+  const auto = calcAutoCardBill(payMethod);
+  el.innerHTML = `
+    <div style="display:flex;gap:6px;align-items:center;flex:1;flex-wrap:wrap">
+      <input id="cb_inp_${cardId}" type="number" value="${amount || ''}" placeholder="청구금액"
+        style="flex:1;min-width:100px;height:32px;background:rgba(255,255,255,0.06);border:1.5px solid var(--purple);border-radius:7px;padding:0 10px;color:var(--text);font-size:14px;font-weight:700;font-family:inherit;outline:none"
+        onkeydown="if(event.key==='Enter')saveCardBillInput('${cardId}')">
+      <span style="font-size:11px;color:var(--sub)">전월자동: ${auto.toLocaleString()}원</span>
+      <button onclick="saveCardBillInput('${cardId}')" style="padding:4px 10px;background:var(--purple);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">저장</button>
+      ${amount > 0 ? `<button onclick="saveCardBill('${cardId}',null)" style="background:none;border:none;color:var(--sub2);font-size:11px;cursor:pointer;padding:0 2px">↩자동</button>` : ''}
+    </div>`;
+  document.getElementById('cb_inp_' + cardId)?.focus();
+}
+function saveCardBillInput(cardId) {
+  const inp = document.getElementById('cb_inp_' + cardId);
+  if (!inp) return;
+  const val = parseInt(inp.value);
+  saveCardBill(cardId, isNaN(val) ? null : val);
+}
+
+function loadCustomDays() {
+  return JSON.parse(localStorage.getItem('cf_custom_days') || '{}');
+}
+function saveCustomDays(o) {
+  localStorage.setItem('cf_custom_days', JSON.stringify(o));
+}
+
+function editDay(id) {
+  const el = document.getElementById('day_' + id);
+  if (!el) return;
+  const customDays = loadCustomDays();
+  const item = CASHFLOW.find(c => c.id === id);
+  if (!item) return;
+  const cur = customDays[id] ?? item.day;
+  el.outerHTML = `<input id="day_inp_${id}" type="number" min="1" max="31"
+    style="width:38px;background:rgba(167,139,250,.15);border:1.5px solid var(--purple);border-radius:5px;color:var(--text);font-size:11px;text-align:center;padding:2px 3px;font-family:inherit;outline:none"
+    value="${cur === 99 ? '' : cur}" placeholder="일"
+    onblur="saveDay('${id}')" onkeydown="if(event.key==='Enter')this.blur()">`;
+  const inp = document.getElementById('day_inp_' + id);
+  if (inp) { inp.focus(); inp.select(); }
+}
+
+function saveDay(id) {
+  const inp = document.getElementById('day_inp_' + id);
+  if (!inp) return;
+  const raw = parseInt(inp.value);
+  const customDays = loadCustomDays();
+  if (!isNaN(raw) && raw >= 1 && raw <= 31) {
+    customDays[id] = raw;
+  } else if (inp.value === '') {
+    delete customDays[id]; // 기본값 복원
+  }
+  saveCustomDays(customDays);
+  renderCashflow();
 }
 
 function loadManualInterest(loanId) {
