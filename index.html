@@ -517,6 +517,53 @@
   }
   .add-form-toggle:active { background: rgba(124,58,237,0.18); }
   .add-form-toggle.open { background: rgba(124,58,237,0.15); border-style: solid; }
+
+  /* ─── 플랜 탭 섹션 타이틀 ─── */
+  .plan-title {
+    font-size: 13px; font-weight: 700; letter-spacing: .01em;
+    margin: 18px 0 10px; display: flex; align-items: center; gap: 6px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border2);
+  }
+
+  /* ─── 분석 요약 바 메트릭 그리드 ─── */
+  .analysis-metrics {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;
+  }
+  .analysis-metric {
+    background: var(--card2); border-radius: var(--radius-sm);
+    padding: 10px 12px; border: 1px solid var(--border2);
+  }
+  .analysis-metric-label { font-size: 10px; color: var(--sub); margin-bottom: 3px; }
+  .analysis-metric-val { font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .analysis-metric-sub { font-size: 10px; color: var(--sub2); margin-top: 2px; }
+
+  /* ─── 지출 구성 브레이크다운 ─── */
+  .cf-breakdown { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); }
+  .cf-breakdown-row { padding: 10px 14px; border-bottom: 1px solid var(--border2); }
+  .cf-breakdown-row:last-child { border-bottom: none; background: var(--card2); }
+  .cf-breakdown-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .cf-breakdown-bar { height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+  .cf-breakdown-bar-fill { height: 100%; border-radius: 2px; }
+  .cf-breakdown-items { display: flex; flex-direction: column; gap: 2px; }
+  .cf-breakdown-item { display: flex; justify-content: space-between; font-size: 11px; color: var(--sub); }
+
+  /* ─── 항목 편집 탭 ─── */
+  .cfe-group-title {
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; margin-bottom: 4px;
+    padding-bottom: 5px; border-bottom: 1px solid var(--border2);
+  }
+  .cfe-row { padding: 9px 0; border-bottom: 1px solid var(--border2); }
+  .cfe-row-inner { display: flex; align-items: center; gap: 6px; }
+  .cfe-name { font-size: 13px; font-weight: 600; flex: 1; min-width: 0; }
+  .cfe-detail { font-size: 11px; color: var(--sub); margin-top: 1px; }
+  .cfe-btn {
+    padding: 4px 10px; border-radius: 6px; font-size: 11px;
+    cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity .15s;
+  }
+  .cfe-btn-edit { background: var(--card2); border: 1px solid var(--border2); color: var(--text); }
+  .cfe-btn-hide { background: none; border: 1px solid var(--border2); color: var(--sub); }
+  .cfe-btn-show { background: none; border: 1px solid var(--green); color: var(--green); }
 </style>
 </head>
 <body>
@@ -652,7 +699,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:0" id="histSummary"></div>
     </div>
     <div class="chart-section" id="chartSec" style="display:none;margin-top:10px">
-      <div class="sec-title">카테고리별 지출</div>
+      <div class="sec-title">카테고리별 변동지출</div>
       <div class="chart-box">
         <div class="chart-top">
           <div class="chart-canvas-wrap">
@@ -668,6 +715,7 @@
         <div class="chart-bars" id="chartBars"></div>
       </div>
     </div>
+    <!-- 고정지출 구성 (항상 표시) -->
     <div class="spacer"></div>
   </div>
 
@@ -721,8 +769,11 @@
   <div class="sub-panel active" id="plan-alert">
   <div class="section">
 
+    <!-- 자동 분석 요약 -->
+    <div id="auto-summary-bar" style="margin-bottom:16px"></div>
+
     <!-- ① 지금 당장 해야 할 것 -->
-    <div class="sec-title" style="color:var(--red);font-size:16px">⚡ 지금 당장 해야 할 것</div>
+    <div class="plan-title" style="color:var(--red)">⚡ 지금 당장 해야 할 것</div>
     <div class="action-list" style="margin-bottom:8px">
       <div class="action-item">
         <div class="action-num" style="background:rgba(244,63,94,.15);color:var(--red);border:1px solid rgba(244,63,94,.3);min-width:28px;height:28px;font-size:14px">1</div>
@@ -742,11 +793,9 @@
       </div>
     </div>
 
-    <!-- 구분선 -->
-    <div style="height:1px;background:var(--border2);margin:16px 0"></div>
 
     <!-- ② 무엇이 잘못되어있나 -->
-    <div class="sec-title" style="font-size:16px">🔍 무엇이 잘못되어있나</div>
+    <div class="plan-title" style="color:var(--text)">🔍 무엇이 잘못되어있나</div>
 
     <!-- 결론 FIRST -->
     <div style="background:rgba(244,63,94,.08);border:1.5px solid rgba(244,63,94,.35);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px">
@@ -778,26 +827,15 @@
       </div>
     </div>
 
-    <!-- 구분선 -->
-    <div style="height:1px;background:var(--border2);margin:16px 0"></div>
 
     <!-- ③ 위기 경보 -->
-    <div class="sec-title" style="color:var(--orange);font-size:16px">🚨 위기 경보</div>
+    <div class="plan-title" style="color:var(--orange)">🚨 위기 경보</div>
 
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:8px">
-      <div style="background:rgba(244,63,94,.1);border:1.5px solid rgba(244,63,94,.45);border-radius:var(--radius);padding:14px 16px">
-        <div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:6px">🚨 2027년 8월 — 수협 원금 1.77억 일괄상환</div>
-        <div style="font-size:12px;color:#FCA5A5;line-height:1.8;word-break:keep-all">현재 이자만 납부 중 (월 ~620,000원 · 4.2%)<br>만기까지 13개월 — 지금 당장 적립 시작하지 않으면 상환 불가</div>
-      </div>
-      <div style="background:rgba(251,146,60,.08);border:1.5px solid rgba(251,146,60,.35);border-radius:var(--radius);padding:14px 16px">
-        <div style="font-size:15px;font-weight:700;color:var(--orange);margin-bottom:6px">⚠️ 거치형 2건 — 원금 전혀 안 줄고 있음</div>
-        <div style="font-size:12px;color:#FED7AA;line-height:1.8;word-break:keep-all">카카오뱅크(기존) 8.18% · 잔여 293만 · 이자 25,000원만 납부<br>하나은행 5.68% · 잔여 278만 · 이자 30,000원만 납부<br>→ JB 완납 후 즉시 원금상환형 전환 요청</div>
-      </div>
-      <div style="background:rgba(96,165,250,.07);border:1.5px solid rgba(96,165,250,.25);border-radius:var(--radius);padding:14px 16px">
-        <div style="font-size:15px;font-weight:700;color:var(--blue);margin-bottom:6px">✅ 7월 — 삼성할부 신한 완납</div>
-        <div style="font-size:12px;color:#BFDBFE;line-height:1.8;word-break:keep-all">132,100원/월 자동 해방<br>→ JB 전북은행_2 또는 카카오뱅크2 추가 상환에 즉시 투입</div>
-      </div>
-    </div>
+    <div id="auto-crisis-cards" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px"></div>
+
+    <!-- 월 지출 구성 -->
+    <div class="plan-title" style="color:var(--blue)">📊 월 지출 구성</div>
+    <div id="auto-cashflow-breakdown" style="margin-bottom:8px"></div>
 
   </div>
   <div class="spacer"></div>
@@ -807,6 +845,7 @@
   <div class="sub-panel" id="plan-roadmap">
   <div class="section">
     <div class="sec-title">대출 상환 로드맵 — 우선순위 순</div>
+    <div id="auto-payoff-bar" style="margin-bottom:12px"></div>
     <div class="roadmap">
 
       <div class="road-item">
@@ -888,8 +927,8 @@
 <div class="tab-panel" id="tab-manage">
   <div class="sub-tabs">
     <button class="sub-tab active" onclick="switchManage('fixed')">고정지출</button>
-    <button class="sub-tab" onclick="switchManage('import')">불러오기</button>
-    <button class="sub-tab" onclick="switchManage('backup')">백업</button>
+    <button class="sub-tab" onclick="switchManage('items')">항목 편집</button>
+    <button class="sub-tab" onclick="switchManage('data')">데이터</button>
   </div>
   <!-- 고정지출 서브패널 -->
   <div class="sub-panel active" id="mgmt-fixed">
@@ -909,13 +948,6 @@
     <div class="sec-title">📅 월 현금흐름</div>
     <div style="font-size:11px;color:var(--sub);margin-bottom:10px">초록 수입 · 파랑 저축 · <span style="color:var(--orange)">주황 50만↑</span></div>
     <div class="fixed-group" id="cashflowList" style="margin-bottom:14px"></div>
-
-    <!-- 사용자 추가 항목 -->
-    <div id="userFixedSection" style="display:none">
-      <div class="sec-title">내가 추가한 항목</div>
-      <div class="fixed-group" id="userFixedList"></div>
-      <div style="height:10px"></div>
-    </div>
 
     <!-- 카드별 납부 -->
     <div class="sec-title" style="margin-top:16px">💳 카드별 납부</div>
@@ -943,7 +975,31 @@
       </div>
     </div>
 
-    <!-- 새 항목 추가 (맨 아래, 숨김) -->
+
+  </div>
+  <div class="spacer"></div>
+</div>
+
+  <!-- 항목 편집 서브패널 -->
+  <div class="sub-panel" id="mgmt-items">
+  <div class="section" style="padding-top:14px">
+    <div style="font-size:12px;color:var(--sub);margin-bottom:14px;line-height:1.7;word-break:keep-all">
+      이름·금액·금리를 바꾸면 현금흐름·로드맵·분석 탭에 모두 즉시 반영됩니다.<br>
+      <span style="color:var(--orange)">수정됨</span> 표시된 항목은 기본값과 다른 상태입니다.
+    </div>
+    <div id="cf-item-editor"></div>
+  </div>
+
+  <!-- 내가 추가한 항목 -->
+  <div id="userFixedSection" style="display:none">
+    <div class="section" style="padding-top:0">
+      <div class="sec-title">내가 추가한 항목</div>
+      <div class="fixed-group" id="userFixedList"></div>
+    </div>
+  </div>
+
+  <!-- 새 항목 추가 -->
+  <div class="section" style="padding-top:0">
     <button class="add-form-toggle" id="addFormToggle" onclick="toggleAddForm()">＋ 새 할부 / 고정지출 추가</button>
     <div id="addFormBody" style="display:none;margin-top:8px">
       <div class="add-fixed-card">
@@ -971,13 +1027,13 @@
         </div>
       </div>
     </div>
-
   </div>
-  <div class="spacer"></div>
-</div>
 
-  <!-- 백업/복원 서브패널 -->
-  <div class="sub-panel" id="mgmt-backup">
+  <div class="spacer"></div>
+  </div>
+
+  <!-- 데이터(백업+불러오기) 서브패널 -->
+  <div class="sub-panel" id="mgmt-data">
   <div class="section" style="padding-top:14px">
     <div style="background:var(--card2);border-radius:var(--radius);padding:16px;border:1px solid rgba(96,165,250,0.15);margin-bottom:12px">
       <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px">💾 데이터 백업</div>
@@ -986,7 +1042,7 @@
         📤 백업 파일 다운로드
       </button>
     </div>
-    <div style="background:var(--card2);border-radius:var(--radius);padding:16px;border:1px solid rgba(251,191,36,0.15)">
+    <div style="background:var(--card2);border-radius:var(--radius);padding:16px;border:1px solid rgba(251,191,36,0.15);margin-bottom:12px">
       <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px">📥 데이터 복원</div>
       <div style="font-size:12px;color:var(--sub);margin-bottom:12px;line-height:1.6">백업 파일을 불러와서 데이터를 복원합니다.<br>⚠️ 현재 데이터가 덮어쓰여집니다.</div>
       <label style="display:block;width:100%;height:42px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:var(--radius-sm);color:var(--yellow);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
@@ -996,11 +1052,7 @@
       <div id="backupRestoreMsg" style="font-size:12px;color:var(--green);margin-top:8px;display:none"></div>
     </div>
   </div>
-  </div>
-
-  <!-- 불러오기 서브패널 -->
-  <div class="sub-panel" id="mgmt-import">
-  <div class="section">
+  <div class="section" style="border-top:1px solid var(--border2);padding-top:14px">
 
     <!-- 업로드 안내 -->
     <div class="add-fixed-card" style="margin-bottom:10px">
@@ -1085,7 +1137,7 @@
 
   </div>
   <div class="spacer"></div>
-  </div>
+  </div><!-- /mgmt-data -->
 </div>
 
 <!-- 하단 내비게이션 -->
@@ -1225,6 +1277,9 @@ function updateUI() {
 
   // 주간/일별
   renderWeekly();
+
+  // 자동 분석 (plan 탭 컨테이너가 있을 때만)
+  if (document.getElementById('auto-summary-bar')) renderAutoAnalysis();
 }
 
 // ─── 주간/일별 탭 ─────────────────────────────────────────
@@ -1561,6 +1616,7 @@ function drawMonthlyChart(catData, months, catList, catColorMap) {
   });
 }
 
+
 function renderChart(expenses) {
   const sec = document.getElementById('chartSec');
   if (!expenses || !expenses.length) { sec.style.display = 'none'; return; }
@@ -1659,6 +1715,66 @@ const CASHFLOW = [
   {id:'exp_util',   day:99,  name:'공과금',                     kind:'fix',    badge:'정기',  amount:60000},
   {id:'exp_rent',   day:99,  name:'월세',                       kind:'fix',    badge:'정기',  amount:550000},
 ];
+
+// ── 항목 설정 시스템 ────────────────────────────────────────────
+// 기본값 보존 (편집 후 리셋에 사용)
+const CASHFLOW_DEFAULTS = {};
+(function() {
+  CASHFLOW.forEach(item => {
+    CASHFLOW_DEFAULTS[item.id] = {
+      name: item.name,
+      amount: item.amount,
+      rate: item.rate,
+      principal: item.principal,
+      badge: item.badge,
+      kind: item.kind,
+    };
+  });
+})();
+
+function loadItemConfig(id) {
+  try { return JSON.parse(localStorage.getItem('cf_item_' + id)); } catch { return null; }
+}
+function saveItemConfig(id, cfg) {
+  if (cfg === null || Object.keys(cfg).length === 0)
+    localStorage.removeItem('cf_item_' + id);
+  else
+    localStorage.setItem('cf_item_' + id, JSON.stringify(cfg));
+}
+function applyItemConfig(id) {
+  const item = CASHFLOW.find(c => c.id === id);
+  if (!item) return;
+  // 기본값으로 리셋
+  const def = CASHFLOW_DEFAULTS[id] || {};
+  ['name','amount','rate','principal','badge','kind'].forEach(k => {
+    if (k in def) item[k] = def[k];
+  });
+  // 저장된 오버라이드 적용
+  const cfg = loadItemConfig(id);
+  if (cfg) {
+    if (cfg.name     !== undefined) item.name      = cfg.name;
+    if (cfg.amount   !== undefined) item.amount    = cfg.amount;
+    if (cfg.rate     !== undefined) item.rate      = cfg.rate;
+    if (cfg.principal!== undefined) item.principal = cfg.principal;
+    if (cfg.badge    !== undefined) item.badge     = cfg.badge;
+    if (cfg.kind     !== undefined) item.kind      = cfg.kind;
+  }
+}
+
+// ─── 항목 숨기기 ─────────────────────────────────────────────
+function isCfItemHidden(id) {
+  return localStorage.getItem('cf_hidden_' + id) === '1';
+}
+function toggleHideCfItem(id) {
+  const key = 'cf_hidden_' + id;
+  if (isCfItemHidden(id)) localStorage.removeItem(key);
+  else localStorage.setItem(key, '1');
+  _refreshAll();
+  renderCfEditor();
+}
+function applyAllItemConfigs() {
+  CASHFLOW.forEach(item => applyItemConfig(item.id));
+}
 
 // 은행 실제 계산 방식: 잔액 × 금리 / 365 × 해당월 일수
 function calcInterest(bal, rate) {
@@ -1880,6 +1996,7 @@ function renderCashflow() {
 
   const customDays = loadCustomDays();
   container.innerHTML = CASHFLOW.filter(item => {
+    if (isCfItemHidden(item.id)) return false;
     if (!item.expires) return true;
     return yr < item.expires.yr || (yr === item.expires.yr && mo <= item.expires.mo);
   }).sort((a, b) => {
@@ -2371,12 +2488,316 @@ function switchAnalysis(sub) {
   if (sub === 'monthly') renderMonthly();
 }
 
+// ──────────────────────────────────────────────
+// 자동 분석 엔진
+// ──────────────────────────────────────────────
+
+function _addMo(y, m, n) {
+  // m은 0-indexed (0=1월)
+  let total = m + n;
+  let ry = y + Math.floor(total / 12);
+  let rm = ((total % 12) + 12) % 12;
+  return { yr: ry, mo: rm };
+}
+function _moStr(y, m) { return `${y}년 ${m + 1}월`; }
+
+function runAnalysis() {
+  const bals = loadBalances();
+
+  // ── 대출 완납 예측 (CASHFLOW 직접 읽기) ────────
+  const payoffs = [];
+
+  // 원금균등 상환 대출
+  CASHFLOW.filter(c => c.kind === 'loan' && c.loanKind === 'equal-principal' && c.principal && c.initBal).forEach(L => {
+    const bal = bals[L.id] ?? L.initBal;
+    if (!bal || bal <= 0) return;
+    const months = Math.ceil(bal / L.principal);
+    payoffs.push({
+      id: L.id, name: L.name, rate: L.rate,
+      bal, monthly: L.principal, budget: L.amount,
+      months, payoffDate: _addMo(yr, mo, months),
+      freed: L.amount, initBal: L.initBal,
+      type: 'equal-principal'
+    });
+  });
+
+  // 거치형 / 이자전용 대출 (원금 안 줄어드는 것)
+  CASHFLOW.filter(c => c.kind === 'loan' &&
+    (c.loanKind === 'partial-principal' || c.loanKind === 'interest-only') &&
+    c.rate && c.initBal
+  ).forEach(L => {
+    const bal = bals[L.id] ?? L.initBal;
+    if (!bal) return;
+    const interest = calcInterest(bal, L.rate);
+    payoffs.push({
+      id: L.id, name: L.name, rate: L.rate,
+      bal, monthly: null, months: null,
+      payoffDate: null, freed: interest,
+      initBal: L.initBal, type: 'interest-only'
+    });
+  });
+
+  // ── 수협 만기 계산 ──────────────────────────
+  const suhItem = CASHFLOW.find(c => c.id === 'exp_suhyup');
+  const suhBal = bals['exp_suhyup'] ?? suhItem?.initBal ?? 177000000;
+  // 만기: 2027년 8월 (mo=7, 0-indexed)
+  const suhExpires = { yr: 2027, mo: 7 };
+  const suhMonthsLeft = Math.max(0, (suhExpires.yr - yr) * 12 + (suhExpires.mo - mo));
+  const suhMonthlySave = suhMonthsLeft > 0 ? Math.round(suhBal / suhMonthsLeft) : suhBal;
+
+  // ── 완납된 / 만기 도래 대출 ─────────────────
+  const finishing = CASHFLOW.filter(c =>
+    c.kind === 'loan' && c.expires &&
+    c.expires.yr === yr && c.expires.mo === mo
+  );
+
+  // ── 이번달 수입 / 고정지출 ─────────────────
+  const activeCF = CASHFLOW.filter(c =>
+    !c.expires || yr < c.expires.yr || (yr === c.expires.yr && mo <= c.expires.mo)
+  );
+  const totalIncome = activeCF
+    .filter(c => c.kind === 'income')
+    .reduce((s, c) => s + (loadManualAmt(c.id) ?? c.amount), 0);
+  const totalFixed = activeCF
+    .filter(c => c.kind !== 'income')
+    .reduce((s, c) => {
+      if (c.kind === 'card_bill') return s + getCardBillAmt(c.id).amount;
+      const man = loadManualAmt(c.id) ?? loadManualPay(c.id);
+      return s + (man !== null ? man : c.amount);
+    }, 0);
+  const freeAmt = totalIncome - totalFixed;
+  const freeRatio = totalIncome > 0 ? Math.round(freeAmt / totalIncome * 100) : 0;
+
+  // ── 6개월 이내 완납 예정 ────────────────────
+  const nearPayoff = payoffs.filter(p => p.months != null && p.months > 0 && p.months <= 6);
+
+  return {
+    payoffs: payoffs.sort((a,b) => (a.months ?? 9999) - (b.months ?? 9999)),
+    nearPayoff, finishing,
+    suhyup: { bal: suhBal, monthsLeft: suhMonthsLeft, monthlySave: suhMonthlySave, expires: suhExpires },
+    totalIncome, totalFixed, freeAmt, freeRatio,
+    ts: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})
+  };
+}
+
+function renderAutoAnalysis() {
+  const a = runAnalysis();
+  const fmt = n => n.toLocaleString();
+
+  // ── 1. 요약 바 (위기&할일 상단) ────────────
+  const sumEl = document.getElementById('auto-summary-bar');
+  if (sumEl) {
+    const rc = a.freeRatio < 5 ? 'var(--red)' : a.freeRatio < 15 ? 'var(--orange)' : 'var(--green)';
+    const statusIcon = a.freeRatio < 5 ? '🚨' : a.freeRatio < 15 ? '⚠️' : '✅';
+    sumEl.innerHTML = `
+      <div style="border-radius:var(--radius);overflow:hidden;border:1px solid var(--border2)">
+        <div style="background:var(--card2);padding:10px 14px;font-size:10px;color:var(--sub);letter-spacing:.04em">
+          📊 ${yr}년 ${mo+1}월 자동 분석 · ${a.ts} 기준
+        </div>
+        <div class="analysis-metrics" style="margin:0;padding:8px;gap:6px">
+          <div class="analysis-metric">
+            <div class="analysis-metric-label">월 수입</div>
+            <div class="analysis-metric-val" style="color:var(--green)">+${fmt(a.totalIncome)}</div>
+          </div>
+          <div class="analysis-metric">
+            <div class="analysis-metric-label">고정지출</div>
+            <div class="analysis-metric-val" style="color:var(--red)">-${fmt(a.totalFixed)}</div>
+          </div>
+          <div class="analysis-metric">
+            <div class="analysis-metric-label">자유예산 ${statusIcon}</div>
+            <div class="analysis-metric-val" style="color:${rc}">${fmt(a.freeAmt)}</div>
+            <div class="analysis-metric-sub">${a.freeRatio}% 여유</div>
+          </div>
+        </div>
+        <div style="padding:0 8px 8px">
+          <div style="height:5px;background:var(--border2);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${Math.min(100, 100 - a.freeRatio)}%;background:${rc};border-radius:3px;transition:width .4s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:3px">
+            <span style="font-size:10px;color:var(--sub)">고정 ${100 - a.freeRatio}%</span>
+            <span style="font-size:10px;color:${rc};font-weight:600">자유 ${a.freeRatio}%</span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── 2. 위기 경보 카드 (자동 생성) ──────────
+  const crisisEl = document.getElementById('auto-crisis-cards');
+  if (crisisEl) {
+    const cards = [];
+    const suh = a.suhyup;
+
+    // 수협 만기 (항상 표시 - 가장 큰 위기)
+    const urgency = suh.monthsLeft <= 3 ? 'red' : suh.monthsLeft <= 9 ? 'orange' : 'blue';
+    const uc = {
+      red:    ['rgba(244,63,94,.1)',   'rgba(244,63,94,.45)',  'var(--red)',    '#FCA5A5', '🚨'],
+      orange: ['rgba(251,146,60,.08)', 'rgba(251,146,60,.35)', 'var(--orange)', '#FED7AA', '⚠️'],
+      blue:   ['rgba(96,165,250,.07)', 'rgba(96,165,250,.25)', 'var(--blue)',   '#BFDBFE', '⏳'],
+    }[urgency];
+    cards.push(`
+      <div style="background:${uc[0]};border:1.5px solid ${uc[1]};border-radius:var(--radius);padding:14px 16px">
+        <div style="font-size:15px;font-weight:700;color:${uc[2]};margin-bottom:6px">
+          ${uc[4]} ${_moStr(suh.expires.yr, suh.expires.mo)} — 수협 원금 ${Math.round(suh.bal/10000).toLocaleString()}만원 일괄상환
+        </div>
+        <div style="font-size:12px;color:${uc[3]};line-height:1.9;word-break:keep-all">
+          만기까지 <strong>${suh.monthsLeft}개월</strong> 남음 · 현재 잔액 ${fmt(suh.bal)}원<br>
+          지금부터 월 <strong style="color:${uc[2]}">${fmt(suh.monthlySave)}원</strong> 적립 필요
+          ${suh.monthsLeft <= 6 ? '<br><span style="color:var(--red);font-weight:700">⚡ 6개월 이내 — 즉각 대응 필요</span>' : ''}
+        </div>
+      </div>`);
+
+    // 이번달 완납
+    for (const f of a.finishing) {
+      cards.push(`
+        <div style="background:rgba(16,217,126,.08);border:1.5px solid rgba(16,217,126,.4);border-radius:var(--radius);padding:14px 16px">
+          <div style="font-size:15px;font-weight:700;color:var(--green);margin-bottom:6px">🎉 이번달 — ${f.name} 완납!</div>
+          <div style="font-size:12px;color:#86EFAC;line-height:1.8">
+            ${fmt(f.amount)}원/월 자동 해방<br>→ JB 또는 카카오뱅크2 추가 상환에 즉시 투입
+          </div>
+        </div>`);
+    }
+
+    // 6개월 이내 완납 예정
+    for (const p of a.nearPayoff) {
+      cards.push(`
+        <div style="background:rgba(16,217,126,.05);border:1.5px solid rgba(16,217,126,.25);border-radius:var(--radius);padding:14px 16px">
+          <div style="font-size:15px;font-weight:700;color:var(--green);margin-bottom:6px">
+            ✅ ${_moStr(p.payoffDate.yr, p.payoffDate.mo)} — ${p.name} 완납 예정
+          </div>
+          <div style="font-size:12px;color:#86EFAC;line-height:1.8;word-break:keep-all">
+            잔여 ${Math.round(p.bal/10000).toLocaleString()}만원 · <strong>${p.months}개월</strong> 남음<br>
+            완납 시 +${fmt(p.freed)}원/월 해방
+          </div>
+        </div>`);
+    }
+
+    // 거치형 대출 경고
+    const ioLoans = a.payoffs.filter(p => p.type === 'interest-only' && p.bal > 500000);
+    if (ioLoans.length > 0) {
+      const desc = ioLoans
+        .map(p => `${p.name} ${p.rate}% · 잔여 ${Math.round(p.bal/10000)}만원 · 이자 ${fmt(p.freed)}원/월`)
+        .join('<br>');
+      cards.push(`
+        <div style="background:rgba(251,146,60,.07);border:1.5px solid rgba(251,146,60,.3);border-radius:var(--radius);padding:14px 16px">
+          <div style="font-size:15px;font-weight:700;color:var(--orange);margin-bottom:6px">⚠️ 거치형 ${ioLoans.length}건 — 원금이 줄지 않음</div>
+          <div style="font-size:12px;color:#FED7AA;line-height:1.9;word-break:keep-all">
+            ${desc}<br>→ 고금리 대출 완납 후 즉시 원금상환형 전환 요청
+          </div>
+        </div>`);
+    }
+
+    crisisEl.innerHTML = cards.join('');
+  }
+
+  // ── 2-B. 월 지출 구성 브레이크다운 ────────
+  const breakdownEl = document.getElementById('auto-cashflow-breakdown');
+  if (breakdownEl) {
+    const activeCF = CASHFLOW.filter(c =>
+      !isCfItemHidden(c.id) &&
+      (!c.expires || yr < c.expires.yr || (yr === c.expires.yr && mo <= c.expires.mo))
+    );
+
+    // 종류별 항목 + 금액
+    const groups = [
+      { key: 'loan',     label: '🏦 대출 상환',   color: 'var(--orange)', items: [] },
+      { key: 'fix',      label: '📋 정기지출',     color: 'var(--blue)',   items: [] },
+      { key: 'save',     label: '💰 저축',         color: 'var(--blue)',   items: [] },
+      { key: 'card_bill',label: '💳 카드 청구',    color: 'var(--purple)', items: [] },
+      { key: 'income',   label: '💚 수입',         color: 'var(--green)',  items: [] },
+    ];
+
+    activeCF.forEach(c => {
+      const g = groups.find(g => g.key === c.kind);
+      if (!g) return;
+      let amt;
+      if (c.kind === 'card_bill') amt = getCardBillAmt(c.id).amount;
+      else if (c.kind === 'loan') amt = loadManualPay(c.id) ?? c.amount;
+      else amt = loadManualAmt(c.id) ?? c.amount;
+      g.items.push({ name: c.name, amt });
+    });
+
+    const totalExp = groups.filter(g => g.key !== 'income').reduce((s, g) => s + g.items.reduce((ss, i) => ss + i.amt, 0), 0);
+    const totalInc = groups.find(g => g.key === 'income').items.reduce((s, i) => s + i.amt, 0);
+    const grandTotal = totalInc || 1;
+
+    const freeAmt = totalInc - totalExp;
+    const freeRatio = Math.round(freeAmt / grandTotal * 100);
+    const fc = freeRatio < 5 ? 'var(--red)' : freeRatio < 15 ? 'var(--orange)' : 'var(--green)';
+    breakdownEl.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        ${groups.filter(g => g.key !== 'income' && g.items.length > 0).map(g => {
+          const total = g.items.reduce((s, i) => s + i.amt, 0);
+          const pct = Math.round(total / grandTotal * 100);
+          return `<div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+              <span style="font-size:12px;font-weight:600;color:${g.color}">${g.label}</span>
+              <span style="font-size:12px;font-weight:700;color:${g.color}">-${total.toLocaleString()}원 <span style="font-size:10px;font-weight:400;color:var(--sub)">${pct}%</span></span>
+            </div>
+            <div style="height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:5px">
+              <div style="height:100%;width:${Math.min(100,pct)}%;background:${g.color};border-radius:2px;opacity:.75;transition:width .4s"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;padding-left:4px">
+              ${g.items.map(i => `<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub)"><span>${i.name}</span><span>-${i.amt.toLocaleString()}원</span></div>`).join('')}
+            </div>
+          </div>`;
+        }).join('')}
+        <div style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:2px">고정 합계 / 수입</div>
+            <div style="font-size:12px;font-weight:600;color:var(--text)">${totalExp.toLocaleString()}원 / ${totalInc.toLocaleString()}원</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--sub);margin-bottom:2px">자유예산</div>
+            <div style="font-size:16px;font-weight:700;color:${fc}">${freeAmt.toLocaleString()}원 <span style="font-size:11px;font-weight:400">(${freeRatio}%)</span></div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ── 3. 완납 예측 타임라인 (로드맵 상단) ────
+  const payoffEl = document.getElementById('auto-payoff-bar');
+  if (payoffEl) {
+    const trackable = a.payoffs.filter(p => p.months != null && p.months > 0);
+    if (trackable.length > 0) {
+      const rows = trackable.map(p => {
+        const initBal = p.initBal || p.bal;
+        const paid = initBal - p.bal;
+        const pct = initBal > 0 ? Math.max(2, Math.round(paid / initBal * 100)) : 2;
+        const barColor = p.rate >= 8.5 ? 'var(--red)' : p.rate >= 6 ? 'var(--orange)' : 'var(--blue)';
+        const urgBadge = p.months <= 6
+          ? `<span style="font-size:9px;font-weight:700;background:rgba(16,217,126,.2);color:var(--green);border-radius:3px;padding:1px 5px;margin-left:4px">D-${p.months}개월</span>`
+          : '';
+        return `
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:12px;font-weight:600">${p.name}${urgBadge}</span>
+              <span style="font-size:11px;color:var(--sub)">${_moStr(p.payoffDate.yr, p.payoffDate.mo)} · ${p.months}개월 후</span>
+            </div>
+            <div style="height:7px;background:var(--card);border-radius:4px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px;transition:width .5s"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:3px">
+              <span style="font-size:10px;color:var(--sub)">잔여 ${Math.round(p.bal/10000).toLocaleString()}만원</span>
+              <span style="font-size:10px;color:var(--sub)">${pct}% 완료 · 금리 ${p.rate}%</span>
+            </div>
+          </div>`;
+      });
+      payoffEl.innerHTML = `
+        <div style="background:var(--card2);border-radius:var(--radius);padding:14px 16px;border:1px solid var(--border2)">
+          <div style="font-size:10px;color:var(--sub);letter-spacing:.05em;margin-bottom:12px">📈 완납 예측 — 현재 잔액 기준 자동 계산</div>
+          ${rows.join('')}
+        </div>`;
+    }
+  }
+}
+
 function switchPlan(sub) {
   const subs = ['alert','roadmap'];
   document.querySelectorAll('#tab-plan .sub-tab').forEach((t,i) => t.classList.toggle('active', subs[i]===sub));
   document.querySelectorAll('#tab-plan .sub-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('plan-'+sub).classList.add('active');
   if (sub === 'roadmap') renderRoadmap();
+  renderAutoAnalysis();
 }
 
 function loadManualAmt(id) {
@@ -2598,6 +3019,7 @@ function saveManualInterest(loanId, amount) {
 }
 
 function renderRoadmap() {
+  renderAutoAnalysis();
   const bals = loadBalances();
   const fmt2 = n => Math.round(n/10000).toLocaleString() + '만원';
 
@@ -2650,37 +3072,43 @@ function renderRoadmap() {
       </div>`;
   }
 
-  // JB 전북은행_2
+  // JB 전북은행_2 (CASHFLOW 기준 동적)
   const jbEl = document.getElementById('road-jb-target');
   if (jbEl) {
-    const jbBal = bals['exp_jb'] ?? 13333320;
-    jbEl.innerHTML = loanCard('exp_jb', jbBal, 9.07, 333333, 500000, '9.07%');
+    const jb = CASHFLOW.find(c => c.id === 'exp_jb');
+    const jbBal = bals['exp_jb'] ?? jb?.initBal ?? 13333320;
+    jbEl.innerHTML = loanCard('exp_jb', jbBal, jb?.rate ?? 9.07, jb?.principal ?? 333333, jb?.amount ?? 500000, `${jb?.rate ?? 9.07}%`);
   }
 
-  // 카카오뱅크2 (새희망홀씨II)
+  // 카카오뱅크2
   const kk2El = document.getElementById('road-kk2-target');
   if (kk2El) {
-    const kk2Bal = bals['exp_kk2'] ?? 16527770;
-    kk2El.innerHTML = loanCard('exp_kk2', kk2Bal, 7.189, 472230, 600000, '7.189%');
+    const kk2 = CASHFLOW.find(c => c.id === 'exp_kk2');
+    const kk2Bal = bals['exp_kk2'] ?? kk2?.initBal ?? 16527770;
+    kk2El.innerHTML = loanCard('exp_kk2', kk2Bal, kk2?.rate ?? 7.189, kk2?.principal ?? 472230, kk2?.amount ?? 600000, `${kk2?.rate ?? 7.189}%`);
   }
 
   // Phase 3: 카카오뱅크(거치형) + 하나은행
   const p3El = document.getElementById('road-phase3-target');
   if (p3El) {
-    const kk1Bal = bals['exp_kk1'] ?? 2930000;
-    const hanaBal = bals['exp_hana'] ?? 2780000;
-    p3El.innerHTML = `카카오뱅크 8.18% · 잔여 <strong>${kk1Bal.toLocaleString()}원</strong> / 하나은행 5.68% · 잔여 <strong>${hanaBal.toLocaleString()}원</strong>`;
+    const kk1 = CASHFLOW.find(c => c.id === 'exp_kk1');
+    const hana = CASHFLOW.find(c => c.id === 'exp_hana');
+    const kk1Bal = bals['exp_kk1'] ?? kk1?.initBal ?? 2930000;
+    const hanaBal = bals['exp_hana'] ?? hana?.initBal ?? 2780000;
+    p3El.innerHTML = `${kk1?.name ?? '카카오뱅크'} ${kk1?.rate ?? 8.18}% · 잔여 <strong>${kk1Bal.toLocaleString()}원</strong> / ${hana?.name ?? '하나은행'} ${hana?.rate ?? 5.68}% · 잔여 <strong>${hanaBal.toLocaleString()}원</strong>`;
   }
 
-  // Phase 4: 명수 전세자금대출
+  // Phase 4: 전세자금대출
   const p4El = document.getElementById('road-phase4-target');
   if (p4El) {
-    const jeonseBal = bals['exp_jeonse'] ?? 21000000;
-    const jeonseInterest = calcInterest(jeonseBal, 4.24);
+    const jeonse = CASHFLOW.find(c => c.id === 'exp_jeonse');
+    const jeonseBal = bals['exp_jeonse'] ?? jeonse?.initBal ?? 27000000;
+    const jeonseRate = jeonse?.rate ?? 4.24;
+    const jeonseInterest = calcInterest(jeonseBal, jeonseRate);
     p4El.innerHTML = `
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
         <span style="font-size:13px">잔여 <strong>${jeonseBal.toLocaleString()}원</strong></span>
-        <span style="font-size:11px;color:var(--sub);background:var(--card2);border-radius:4px;padding:2px 6px">약 4.24% · 거치형</span>
+        <span style="font-size:11px;color:var(--sub);background:var(--card2);border-radius:4px;padding:2px 6px">약 ${jeonseRate}% · 거치형</span>
       </div>
       <div style="background:var(--card2);border-radius:8px;padding:10px 12px">
         <div style="font-size:11px;color:var(--sub);margin-bottom:3px">이자만 납부 중 (원금상환 계획 필요)</div>
@@ -2690,10 +3118,213 @@ function renderRoadmap() {
 }
 
 function switchManage(sub) {
-  const subs = ['fixed','import','backup'];
+  const subs = ['fixed','items','data'];
   document.querySelectorAll('#tab-manage .sub-tab').forEach((t,i) => t.classList.toggle('active', subs[i]===sub));
   document.querySelectorAll('#tab-manage .sub-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('mgmt-'+sub).classList.add('active');
+  if (sub === 'items') renderCfEditor();
+}
+
+// ── 항목 편집 ─────────────────────────────────────────────────
+
+function _refreshAll() {
+  renderCashflow();
+  renderAutoAnalysis();
+  if (document.getElementById('plan-roadmap')?.classList.contains('active')) renderRoadmap();
+}
+
+function renderCfEditor() {
+  const el = document.getElementById('cf-item-editor');
+  if (!el) return;
+
+  const groups = [
+    { label: '💚 수입',            kinds: ['income'],    color: 'var(--green)' },
+    { label: '📋 정기지출 · 저축', kinds: ['fix','save'], color: 'var(--sub)' },
+    { label: '🏦 대출',            kinds: ['loan'],       color: 'var(--orange)' },
+    { label: '💳 카드 청구',       kinds: ['card_bill'],  color: 'var(--purple)' },
+  ];
+
+  const visibleRows = groups.map(g => {
+    const items = CASHFLOW.filter(c => g.kinds.includes(c.kind) && !isCfItemHidden(c.id));
+    if (!items.length) return '';
+
+    const rows = items.map(item => _cfEditorRow(item)).join('');
+    return `
+      <div style="margin-bottom:18px">
+        <div class="cfe-group-title" style="color:${g.color}">${g.label}</div>
+        ${rows}
+      </div>`;
+  }).join('');
+
+  // 숨긴 항목 섹션
+  const hiddenItems = CASHFLOW.filter(c => isCfItemHidden(c.id));
+  const hiddenSection = hiddenItems.length > 0 ? `
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border2)">
+      <div style="font-size:10px;font-weight:700;color:var(--sub2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">🚫 숨긴 항목 (${hiddenItems.length})</div>
+      ${hiddenItems.map(item => `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border2);opacity:.6">
+          <div style="flex:1;font-size:13px;color:var(--sub)">${item.name}</div>
+          <button onclick="toggleHideCfItem('${item.id}')"
+            style="padding:4px 10px;background:none;border:1px solid var(--green);border-radius:6px;color:var(--green);font-size:11px;cursor:pointer;font-family:inherit">
+            표시
+          </button>
+        </div>`).join('')}
+    </div>` : '';
+
+  el.innerHTML = `
+    <div style="font-size:11px;color:var(--sub);background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:14px;line-height:1.7">
+      <strong style="color:var(--text)">기본 항목</strong>은 코드에 내장되어 완전 삭제 불가 → <strong style="color:var(--orange)">숨기기</strong>로 현금흐름에서 제외<br>
+      <strong style="color:var(--text)">사용자 추가 항목</strong>은 아래 '내가 추가한 항목'에서 ✕ 버튼으로 삭제 가능
+    </div>
+    ${visibleRows}
+    ${hiddenSection}`;
+}
+
+function _cfEditorRow(item) {
+  const hasOverride = loadItemConfig(item.id) !== null;
+  const isHidden = isCfItemHidden(item.id);
+  const ovBadge = hasOverride
+    ? `<span style="font-size:9px;background:rgba(251,146,60,.2);color:var(--orange);border-radius:3px;padding:1px 5px;margin-left:5px">수정됨</span>` : '';
+
+  let detail = '';
+  if (item.kind === 'income')         detail = `+${item.amount.toLocaleString()}원`;
+  else if (item.kind === 'card_bill') detail = '전월 자동합산';
+  else if (item.kind === 'loan') {
+    const parts = [`-${item.amount.toLocaleString()}원`];
+    if (item.rate)      parts.push(`${item.rate}%`);
+    if (item.principal) parts.push(`원금 ${item.principal.toLocaleString()}원/월`);
+    detail = parts.join(' · ');
+  } else {
+    detail = `-${item.amount.toLocaleString()}원`;
+  }
+
+  return `
+    <div class="cfe-row" id="cfrow_${item.id}">
+      <div class="cfe-row-inner">
+        <div style="flex:1;min-width:0">
+          <div class="cfe-name">${item.name}${ovBadge}</div>
+          <div class="cfe-detail">${detail}</div>
+        </div>
+        <button onclick="editCfItem('${item.id}')" class="cfe-btn cfe-btn-edit">✏️</button>
+        <button onclick="toggleHideCfItem('${item.id}')" class="cfe-btn cfe-btn-hide">숨기기</button>
+      </div>
+    </div>`;
+}
+
+function editCfItem(id) {
+  const rowEl = document.getElementById('cfrow_' + id);
+  if (!rowEl) return;
+  const item = CASHFLOW.find(c => c.id === id);
+  if (!item) return;
+  const def = CASHFLOW_DEFAULTS[id] || {};
+
+  const isLoan    = item.kind === 'loan';
+  const isIncome  = item.kind === 'income';
+  const isCard    = item.kind === 'card_bill';
+  const isEqP     = item.loanKind === 'equal-principal';
+  const hasRate   = isLoan && item.rate != null;
+
+  const fieldStyle = 'height:34px;background:rgba(255,255,255,0.06);border:1.5px solid var(--border2);border-radius:7px;padding:0 10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;box-sizing:border-box';
+
+  const amtField = !isCard ? `
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:var(--sub)">${isIncome ? '월 수입액' : isLoan ? '월 납부 기준액' : '월 금액'} (원)</label>
+      <input id="cfe_amt_${id}" type="number" value="${item.amount ?? ''}" style="${fieldStyle}">
+    </div>` : '';
+
+  const rateField = hasRate ? `
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:var(--sub)">금리 (%)</label>
+      <input id="cfe_rate_${id}" type="number" step="0.01" value="${item.rate}" style="${fieldStyle}">
+    </div>` : '';
+
+  const prinField = isEqP ? `
+    <div style="display:flex;flex-direction:column;gap:3px;grid-column:1/-1">
+      <label style="font-size:10px;color:var(--sub)">월 원금 (원)</label>
+      <input id="cfe_prin_${id}" type="number" value="${item.principal ?? ''}" style="${fieldStyle}">
+    </div>` : '';
+
+  const defDesc = def.rate != null
+    ? `기본: ${def.name} · ${(def.amount||0).toLocaleString()}원 · ${def.rate}%`
+    : `기본: ${def.name} · ${(def.amount||0).toLocaleString()}원`;
+
+  const hasOverride = loadItemConfig(id) !== null;
+
+  const kindField = !isCard ? `
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:var(--sub)">분류</label>
+      <select id="cfe_kind_${id}" style="${fieldStyle}">
+        <option value="income"   ${item.kind==='income'  ?'selected':''}>💚 수입</option>
+        <option value="fix"      ${item.kind==='fix'     ?'selected':''}>📋 정기지출</option>
+        <option value="save"     ${item.kind==='save'    ?'selected':''}>💰 저축</option>
+        <option value="loan"     ${item.kind==='loan'    ?'selected':''}>🏦 대출</option>
+      </select>
+    </div>` : '';
+
+  rowEl.innerHTML = `
+    <div style="padding:10px 0;background:var(--card2);border-radius:10px;padding:12px;margin-bottom:2px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:3px">
+          <label style="font-size:10px;color:var(--sub)">이름</label>
+          <input id="cfe_name_${id}" type="text" value="${item.name}" style="${fieldStyle}">
+        </div>
+        ${kindField}
+        ${amtField}
+        ${rateField}
+        ${prinField}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button onclick="saveCfItem('${id}')"
+          style="flex:1;min-width:60px;padding:8px;background:var(--purple);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+          저장
+        </button>
+        ${hasOverride ? `<button onclick="resetCfItem('${id}')"
+          style="padding:8px 12px;background:none;border:1px solid var(--orange);border-radius:7px;color:var(--orange);font-size:12px;cursor:pointer;font-family:inherit">
+          ↩ 기본값
+        </button>` : ''}
+        <button onclick="renderCfEditor()"
+          style="padding:8px 12px;background:none;border:1px solid var(--border2);border-radius:7px;color:var(--sub);font-size:12px;cursor:pointer;font-family:inherit">
+          취소
+        </button>
+      </div>
+      <div style="font-size:10px;color:var(--sub2);margin-top:6px">${defDesc}</div>
+    </div>`;
+
+  document.getElementById('cfe_name_' + id)?.focus();
+}
+
+function saveCfItem(id) {
+  const def = CASHFLOW_DEFAULTS[id] || {};
+  const nameEl  = document.getElementById('cfe_name_' + id);
+  const amtEl   = document.getElementById('cfe_amt_'  + id);
+  const rateEl  = document.getElementById('cfe_rate_' + id);
+  const prinEl  = document.getElementById('cfe_prin_' + id);
+
+  const kindEl = document.getElementById('cfe_kind_' + id);
+  const cfg = {};
+  const name = nameEl?.value?.trim();
+  const amt  = amtEl  ? parseInt(amtEl.value)    : NaN;
+  const rate = rateEl ? parseFloat(rateEl.value) : NaN;
+  const prin = prinEl ? parseInt(prinEl.value)   : NaN;
+  const kind = kindEl?.value;
+
+  if (name && name !== def.name)              cfg.name      = name;
+  if (!isNaN(amt)  && amt  !== def.amount)    cfg.amount    = amt;
+  if (!isNaN(rate) && rate !== def.rate)      cfg.rate      = rate;
+  if (!isNaN(prin) && prin !== def.principal) cfg.principal = prin;
+  if (kind && kind !== def.kind)              cfg.kind      = kind;
+
+  saveItemConfig(id, Object.keys(cfg).length > 0 ? cfg : null);
+  applyItemConfig(id);
+  _refreshAll();
+  renderCfEditor();
+}
+
+function resetCfItem(id) {
+  saveItemConfig(id, null);
+  applyItemConfig(id);
+  _refreshAll();
+  renderCfEditor();
 }
 
 // ─── 파일 불러오기 ───────────────────────────────────────
@@ -2956,6 +3587,7 @@ function importToApp() {
   if (added > 0) switchTab('history');
 }
 
+applyAllItemConfigs();
 initLoanBalances();
 updateUI();
 </script>
