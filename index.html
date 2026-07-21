@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>월 가계부</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="가계부">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -885,6 +889,7 @@
   <div class="sub-tabs">
     <button class="sub-tab active" onclick="switchManage('fixed')">고정지출</button>
     <button class="sub-tab" onclick="switchManage('import')">불러오기</button>
+    <button class="sub-tab" onclick="switchManage('backup')">백업</button>
   </div>
   <!-- 고정지출 서브패널 -->
   <div class="sub-panel active" id="mgmt-fixed">
@@ -970,6 +975,28 @@
   </div>
   <div class="spacer"></div>
 </div>
+
+  <!-- 백업/복원 서브패널 -->
+  <div class="sub-panel" id="mgmt-backup">
+  <div class="section" style="padding-top:14px">
+    <div style="background:var(--card2);border-radius:var(--radius);padding:16px;border:1px solid rgba(96,165,250,0.15);margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px">💾 데이터 백업</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:12px;line-height:1.6">앱을 삭제하면 데이터가 사라집니다.<br>주기적으로 백업해두세요.</div>
+      <button onclick="exportBackup()" style="width:100%;height:42px;background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.3);border-radius:var(--radius-sm);color:var(--blue);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:8px">
+        📤 백업 파일 다운로드
+      </button>
+    </div>
+    <div style="background:var(--card2);border-radius:var(--radius);padding:16px;border:1px solid rgba(251,191,36,0.15)">
+      <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px">📥 데이터 복원</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:12px;line-height:1.6">백업 파일을 불러와서 데이터를 복원합니다.<br>⚠️ 현재 데이터가 덮어쓰여집니다.</div>
+      <label style="display:block;width:100%;height:42px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:var(--radius-sm);color:var(--yellow);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+        📂 백업 파일 선택
+        <input type="file" accept=".json" onchange="importBackup(event)" style="display:none">
+      </label>
+      <div id="backupRestoreMsg" style="font-size:12px;color:var(--green);margin-top:8px;display:none"></div>
+    </div>
+  </div>
+  </div>
 
   <!-- 불러오기 서브패널 -->
   <div class="sub-panel" id="mgmt-import">
@@ -1699,6 +1726,7 @@ function toggleCheck(id) {
         saveBalances(bals);
       }
     }
+    _restoreBankBal(id);
   } else {
     // 체크 → 잔액 차감
     checked.add(id);
@@ -1728,10 +1756,44 @@ function toggleCheck(id) {
         saveBalances(bals);
       }
     }
+    _deductBankBal(id, item);
   }
   saveChecked(checked);
   renderCashflow();
   renderRoadmap();
+  updateBankBal();
+}
+
+// ── 통장잔액 차감/복원 ──
+function _deductBankBal(id, item) {
+  const data = JSON.parse(localStorage.getItem('bank_balance') || 'null');
+  if (!data) return;
+  if (item.kind === 'income') {
+    const incAmt = loadManualAmt(id) ?? item.amount;
+    localStorage.setItem(`cf_bankded_${yr}_${mo}_${id}`, String(-incAmt));
+    data.amount += incAmt;
+  } else {
+    let deduct = item.amount;
+    if (item.kind === 'card_bill') {
+      deduct = getCardBillAmt(id).amount;
+    } else if (item.kind === 'fix' || item.kind === 'save') {
+      deduct = loadManualAmt(id) ?? item.amount;
+    }
+    const manPay = (typeof loadManualPay === 'function') ? loadManualPay(id) : null;
+    if (manPay !== null) deduct = manPay;
+    localStorage.setItem(`cf_bankded_${yr}_${mo}_${id}`, String(deduct));
+    data.amount = Math.max(0, data.amount - deduct);
+  }
+  localStorage.setItem('bank_balance', JSON.stringify(data));
+}
+function _restoreBankBal(id) {
+  const data = JSON.parse(localStorage.getItem('bank_balance') || 'null');
+  if (!data) return;
+  const stored = localStorage.getItem(`cf_bankded_${yr}_${mo}_${id}`);
+  if (!stored) return;
+  data.amount = Math.max(0, data.amount + parseInt(stored));
+  localStorage.removeItem(`cf_bankded_${yr}_${mo}_${id}`);
+  localStorage.setItem('bank_balance', JSON.stringify(data));
 }
 
 function editBal(id) {
@@ -1830,7 +1892,7 @@ function renderCashflow() {
     const effectiveDay = customDays[item.id] ?? item.day;
     const dayLabel = effectiveDay === 99 ? '말일' : effectiveDay + '일';
     const dayModified = customDays[item.id] != null && customDays[item.id] !== item.day;
-    // 원금균등 대출은 수동납부액 있으면 그 금액 표시
+    // 수동 금액 오버라이드 (대출 원금균등 or fix/save/income)
     let displayAmt = item.amount;
     let manualBadge = '';
     if (item.kind === 'loan' && item.loanKind === 'equal-principal') {
@@ -1839,18 +1901,28 @@ function renderCashflow() {
         displayAmt = manPay;
         manualBadge = `<span style="font-size:9px;font-weight:700;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 4px;margin-left:4px">수동</span>`;
       }
+    } else if (item.kind === 'fix' || item.kind === 'save' || item.kind === 'income') {
+      const manAmt = loadManualAmt(item.id);
+      if (manAmt !== null) {
+        displayAmt = manAmt;
+        manualBadge = `<span style="font-size:9px;font-weight:700;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 4px;margin-left:4px">수동</span>`;
+      }
     }
     const amtStr = displayAmt.toLocaleString();
     const isBig = displayAmt >= 500000 && item.kind !== 'income';
 
     // ── 수입 행 ──
     if (item.kind === 'income') {
-      return `<div class="fixed-item" style="background:var(--green-bg);border-radius:8px;margin:3px 0">
-        <span style="width:28px"></span>
+      const isDoneInc = checked.has(item.id);
+      return `<div class="fixed-item ${isDoneInc ? 'cf-item-done' : ''}" style="background:var(--green-bg);border-radius:8px;margin:3px 0">
+        <button class="cf-check ${isDoneInc ? 'done' : ''}" onclick="toggleCheck('${item.id}')" style="${isDoneInc ? 'background:var(--green);border-color:var(--green)' : 'border-color:var(--green)'}">✓</button>
         <span class="fi-date" id="day_${item.id}" onclick="editDay('${item.id}')" style="cursor:pointer;color:var(--green);${dayModified?'text-decoration:underline dotted':''}">${dayLabel}</span>
         <span class="fi-name" style="color:var(--green);font-weight:600">${item.name}</span>
         <span class="fi-badge" style="background:rgba(34,197,94,.15);color:#22C55E;border:1px solid rgba(34,197,94,.3)">수입</span>
-        <span class="fi-amt" style="color:var(--green);font-weight:700">+${amtStr}원</span>
+        <span id="itemamt_${item.id}" style="display:flex;align-items:center;gap:4px;margin-left:auto">
+          <span class="fi-amt" style="color:var(--green);font-weight:700">+${amtStr}원</span>${manualBadge}
+          <button class="cf-edit-btn" onclick="editItemAmt('${item.id}')">✏️</button>
+        </span>
       </div>`;
     }
 
@@ -1931,7 +2003,13 @@ function renderCashflow() {
           <span class="fi-date" id="day_${item.id}" onclick="editDay('${item.id}')" style="cursor:pointer;${dayModified?'text-decoration:underline dotted;color:var(--purple)':''}">${dayLabel}</span>
           <span class="fi-name">${item.name}</span>
           <span class="fi-badge ${badgeClass}">${item.badge}</span>
-          <span class="fi-amt" style="color:${amtColor}">-${amtStr}원${manualBadge}</span>
+          ${(item.kind === 'fix' || item.kind === 'save')
+            ? `<span id="itemamt_${item.id}" style="display:flex;align-items:center;gap:4px;margin-left:auto">
+                <span class="fi-amt" style="color:${amtColor}">-${amtStr}원</span>${manualBadge}
+                <button class="cf-edit-btn" onclick="editItemAmt('${item.id}')">✏️</button>
+               </span>`
+            : `<span class="fi-amt" style="color:${amtColor}">-${amtStr}원${manualBadge}</span>`
+          }
         </div>
         ${balRow}
       </div>
@@ -2301,6 +2379,44 @@ function switchPlan(sub) {
   if (sub === 'roadmap') renderRoadmap();
 }
 
+function loadManualAmt(id) {
+  const v = localStorage.getItem(`cf_manamt_${yr}_${mo}_${id}`);
+  return v !== null ? parseInt(v) : null;
+}
+function saveManualAmt(id, amount) {
+  const key = `cf_manamt_${yr}_${mo}_${id}`;
+  if (amount === null || isNaN(amount) || amount < 0) {
+    localStorage.removeItem(key);
+  } else {
+    localStorage.setItem(key, String(amount));
+  }
+  renderCashflow();
+  updateBankBal();
+}
+function editItemAmt(id) {
+  const el = document.getElementById('itemamt_' + id);
+  if (!el) return;
+  const item = CASHFLOW.find(c => c.id === id);
+  if (!item) return;
+  const cur = loadManualAmt(id) ?? item.amount;
+  const isInc = item.kind === 'income';
+  const sign = isInc ? '+' : '-';
+  el.innerHTML = `
+    <input id="iamt_inp_${id}" type="number" value="${cur}"
+      style="width:110px;height:30px;background:rgba(255,255,255,0.06);border:1.5px solid var(--orange);border-radius:7px;padding:0 8px;color:var(--text);font-size:13px;font-weight:700;font-family:inherit;outline:none"
+      onkeydown="if(event.key==='Enter')saveItemAmtInput('${id}')">
+    <button onclick="saveItemAmtInput('${id}')" style="padding:3px 8px;background:var(--orange);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit">저장</button>
+    ${loadManualAmt(id) !== null ? `<button onclick="saveManualAmt('${id}',null)" style="background:none;border:none;color:var(--sub2);font-size:11px;cursor:pointer;padding:0 2px">↩기본</button>` : ''}`;
+  const inp = document.getElementById('iamt_inp_' + id);
+  if (inp) { inp.focus(); inp.select(); }
+}
+function saveItemAmtInput(id) {
+  const inp = document.getElementById('iamt_inp_' + id);
+  if (!inp) return;
+  const val = parseInt(inp.value);
+  saveManualAmt(id, isNaN(val) ? null : val);
+}
+
 function loadManualPay(loanId) {
   const v = localStorage.getItem(`cf_manpay_${yr}_${mo}_${loanId}`);
   return v !== null ? parseInt(v) : null;
@@ -2314,6 +2430,40 @@ function saveManualPay(loanId, amount) {
     localStorage.setItem(key, String(amount));
   }
   renderRoadmap();
+}
+
+// ── 백업/복원 ──
+function exportBackup() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    data[k] = localStorage.getItem(k);
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const today = new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','');
+  a.href = url;
+  a.download = `가계부_백업_${today}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importBackup(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      Object.keys(data).forEach(k => localStorage.setItem(k, data[k]));
+      const msg = document.getElementById('backupRestoreMsg');
+      if (msg) { msg.style.display='block'; msg.textContent='✅ 복원 완료! 잠시 후 새로고침됩니다.'; }
+      setTimeout(() => location.reload(), 1500);
+    } catch(err) {
+      alert('올바른 백업 파일이 아닙니다.');
+    }
+  };
+  reader.readAsText(file);
 }
 
 // ── 통장 잔액 ──
@@ -2540,7 +2690,7 @@ function renderRoadmap() {
 }
 
 function switchManage(sub) {
-  const subs = ['fixed','import'];
+  const subs = ['fixed','import','backup'];
   document.querySelectorAll('#tab-manage .sub-tab').forEach((t,i) => t.classList.toggle('active', subs[i]===sub));
   document.querySelectorAll('#tab-manage .sub-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('mgmt-'+sub).classList.add('active');
