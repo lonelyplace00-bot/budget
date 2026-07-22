@@ -891,6 +891,23 @@
 
       <div class="road-item">
         <div class="road-left">
+          <div class="road-dot" style="border-color:var(--purple);background:rgba(167,139,250,.15)"></div>
+          <div class="road-line"></div>
+        </div>
+        <div class="road-content">
+          <div class="road-phase" style="color:var(--purple)">신한카드 할부 · 2026.03 ~ 2028.02</div>
+          <div class="road-period">가계신용대출 (신한카드) 완납</div>
+          <div class="road-target" id="road-shinhan-target">금리 10.80% · 24개월 할부 · 월 105,538원</div>
+          <div class="road-gain" style="color:var(--green)">완납 시 +105,538원/월 해방</div>
+          <div class="road-detail">
+            2026년 3월 시작 · 2028년 1월 완납 예정<br>
+            매월 잉여금을 별도 적립 중
+          </div>
+        </div>
+      </div>
+
+      <div class="road-item">
+        <div class="road-left">
           <div class="road-dot" style="border-color:var(--yellow);background:var(--yellow-bg)"></div>
           <div class="road-line"></div>
         </div>
@@ -1745,7 +1762,7 @@ const CASHFLOW = [
   {id:'exp_hana',   day:11,  name:'하나은행 (5.68%)',            kind:'loan',   badge:'대출',  amount:30000,  principal:0, rate:5.68, initBal:2780000, loanKind:'partial-principal'},
   {id:'exp_sam',    day:13,  name:'삼성할부 신한 — 7월 완납 ✅', kind:'loan',   badge:'대출',  amount:132100, expires:{yr:2026, mo:6}},
   {id:'exp_jeonse', day:14,  name:'전세자금대출 (명수)',          kind:'loan',   badge:'대출',  amount:75623,  rate:4.24, initBal:27000000, loanKind:'interest-only'},
-  {id:'exp_shinhan_cl', day:17, name:'가계신용대출 (신한카드)',  kind:'loan',   badge:'대출',  amount:105538, principal:89880, rate:9.59, initBal:1960056, loanKind:'equal-principal'},
+  {id:'exp_shinhan_cl', day:17, name:'가계신용대출 (신한카드)',  kind:'loan',   badge:'대출',  amount:105538, principal:89880, rate:10.80, initBal:1960056, loanKind:'equal-principal', totalMonths:24, startYr:2026, startMo:2, expires:{yr:2028, mo:1}},
   {id:'bill_hyundai', day:12, name:'현대카드 청구',               kind:'card_bill', badge:'카드', amount:0},
   {id:'bill_samsung', day:13, name:'삼성카드 청구',               kind:'card_bill', badge:'카드', amount:0},
   {id:'exp_apple',  day:20,  name:'애플뮤직 (현대카드)',           kind:'fix',    badge:'정기',  amount:20900},
@@ -1777,6 +1794,7 @@ const CASHFLOW_DEFAULTS = {};
       kind: item.kind,
     };
   });
+  // 사용자 추가 항목 주입 (loadCustomCfItems는 아래 정의 후 호출됨 — 지연 호출)
 })();
 
 function loadItemConfig(id) {
@@ -2579,7 +2597,9 @@ function runAnalysis() {
       bal, monthly: L.principal, budget: L.amount,
       months, payoffDate: _addMo(yr, mo, months),
       freed: L.amount, initBal: L.initBal,
-      type: 'equal-principal'
+      type: 'equal-principal',
+      totalMonths: L.totalMonths ?? null,
+      startYr: L.startYr ?? null, startMo: L.startMo ?? null,
     });
   });
 
@@ -2829,10 +2849,15 @@ function renderAutoAnalysis() {
         const urgBadge = p.months <= 6
           ? `<span style="font-size:9px;font-weight:700;background:rgba(16,217,126,.2);color:var(--green);border-radius:3px;padding:1px 5px;margin-left:4px">D-${p.months}개월</span>`
           : '';
+        const curMo = (p.startYr != null && p.startMo != null)
+          ? (yr - p.startYr) * 12 + (mo - p.startMo) + 1 : null;
+        const moBadge = (curMo != null && p.totalMonths)
+          ? `<span style="font-size:9px;font-weight:700;background:rgba(167,139,250,.2);color:var(--purple);border-radius:3px;padding:1px 5px;margin-left:4px">${curMo}/${p.totalMonths}개월차</span>`
+          : '';
         return `
           <div style="margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:12px;font-weight:600">${p.name}${urgBadge}</span>
+              <span style="font-size:12px;font-weight:600">${p.name}${urgBadge}${moBadge}</span>
               <span style="font-size:11px;color:var(--sub)">${_moStr(p.payoffDate.yr, p.payoffDate.mo)} · ${p.months}개월 후</span>
             </div>
             <div style="height:7px;background:var(--card);border-radius:4px;overflow:hidden">
@@ -3036,6 +3061,94 @@ function saveCustomDays(o) {
   localStorage.setItem('cf_custom_days', JSON.stringify(o));
 }
 
+function loadCustomCfItems() {
+  return JSON.parse(localStorage.getItem('cf_custom_items') || '[]');
+}
+function saveCustomCfItems(arr) {
+  localStorage.setItem('cf_custom_items', JSON.stringify(arr));
+}
+
+function injectCustomCfItems() {
+  const customs = loadCustomCfItems();
+  customs.forEach(c => {
+    if (!CASHFLOW.find(x => x.id === c.id)) CASHFLOW.push(c);
+  });
+}
+
+function deleteCustomCfItem(id) {
+  const arr = loadCustomCfItems().filter(c => c.id !== id);
+  saveCustomCfItems(arr);
+  const idx = CASHFLOW.findIndex(c => c.id === id);
+  if (idx !== -1) CASHFLOW.splice(idx, 1);
+  renderCfEditor();
+  updateUI();
+}
+
+function toggleAddCfForm() {
+  const f = document.getElementById('add-cf-form');
+  if (!f) return;
+  const open = f.style.display !== 'none';
+  f.style.display = open ? 'none' : 'block';
+  document.getElementById('add-cf-toggle-btn').textContent = open ? '＋ 새 항목 추가' : '✕ 닫기';
+  if (!open) {
+    // 종류 기본값으로 리셋
+    const sel = document.getElementById('acf_kind');
+    if (sel) { sel.value = 'fix'; _onAddCfKindChange(); }
+  }
+}
+
+function _onAddCfKindChange() {
+  const kind = document.getElementById('acf_kind')?.value;
+  const installRow = document.getElementById('acf_install_row');
+  if (installRow) installRow.style.display = kind === 'installment' ? 'block' : 'none';
+}
+
+function addCustomCfItem() {
+  const name   = document.getElementById('acf_name')?.value.trim();
+  const amtRaw = document.getElementById('acf_amount')?.value;
+  const kind   = document.getElementById('acf_kind')?.value;   // fix | save | installment
+  const badge  = document.getElementById('acf_badge')?.value;
+  const dayRaw = document.getElementById('acf_day')?.value;
+
+  if (!name)        { alert('항목명을 입력해주세요'); return; }
+  if (!amtRaw)      { alert('금액을 입력해주세요'); return; }
+
+  const amount = parseInt(amtRaw);
+  const day    = parseInt(dayRaw) || 99;
+  const id     = 'custom_' + Date.now();
+
+  const cfKind = (kind === 'save') ? 'save' : 'fix';
+
+  const item = { id, name, kind: cfKind, badge, amount, day, _custom: true };
+
+  if (kind === 'installment') {
+    const months  = parseInt(document.getElementById('acf_months')?.value) || 0;
+    const startYr = parseInt(document.getElementById('acf_startyr')?.value) || yr;
+    const startMo = parseInt(document.getElementById('acf_startmo')?.value) || mo;
+    if (months > 0) {
+      item.totalMonths = months;
+      item.startYr = startYr;
+      item.startMo = startMo; // 1-indexed (same as existing CASHFLOW convention)
+      // expires: last month offset from Jan of startYr
+      const totalOffset = (startMo - 1) + months - 1;
+      item.expires = { yr: startYr + Math.floor(totalOffset / 12), mo: (totalOffset % 12) + 1 };
+    }
+  }
+
+  const customs = loadCustomCfItems();
+  customs.push(item);
+  saveCustomCfItems(customs);
+  CASHFLOW.push(item);
+
+  // 폼 닫기 및 초기화
+  document.getElementById('acf_name').value   = '';
+  document.getElementById('acf_amount').value = '';
+  document.getElementById('acf_day').value    = '99';
+  toggleAddCfForm();
+  renderCfEditor();
+  updateUI();
+}
+
 function editDay(id) {
   const el = document.getElementById('day_' + id);
   if (!el) return;
@@ -3150,6 +3263,20 @@ function renderRoadmap() {
     kk2El.innerHTML = loanCard('exp_kk2', kk2Bal, kk2?.rate ?? 7.189, kk2?.principal ?? 472230, kk2?.amount ?? 600000, `${kk2?.rate ?? 7.189}%`);
   }
 
+  // 신한카드 가계신용대출
+  const shinhanEl = document.getElementById('road-shinhan-target');
+  if (shinhanEl) {
+    const sh = CASHFLOW.find(c => c.id === 'exp_shinhan_cl');
+    const shBal = bals['exp_shinhan_cl'] ?? sh?.initBal ?? 1960056;
+    const now = new Date();
+    const yr = now.getFullYear(), mo = now.getMonth() + 1;
+    const curMo = sh?.startYr != null ? (yr - sh.startYr) * 12 + (mo - sh.startMo) + 1 : null;
+    const moLabel = (curMo != null && sh?.totalMonths)
+      ? `<span style="font-size:10px;background:rgba(167,139,250,.2);color:var(--purple);border-radius:3px;padding:2px 6px;margin-left:6px">${curMo}/${sh.totalMonths}개월차</span>`
+      : '';
+    shinhanEl.innerHTML = loanCard('exp_shinhan_cl', shBal, sh?.rate ?? 10.80, sh?.principal ?? 89880, sh?.amount ?? 105538, `${sh?.rate ?? 10.80}% · ${moLabel}`);
+  }
+
   // Phase 3: 카카오뱅크(거치형) + 하나은행
   const p3El = document.getElementById('road-phase3-target');
   if (p3El) {
@@ -3199,6 +3326,74 @@ function renderCfEditor() {
   const el = document.getElementById('cf-item-editor');
   if (!el) return;
 
+  const fieldSt = 'height:34px;background:rgba(255,255,255,0.06);border:1.5px solid var(--border2);border-radius:7px;padding:0 10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:100%;box-sizing:border-box';
+  const selSt   = fieldSt + ';-webkit-appearance:none';
+
+  const addForm = `
+    <div style="margin-bottom:16px">
+      <button id="add-cf-toggle-btn" onclick="toggleAddCfForm()"
+        style="width:100%;height:40px;background:rgba(124,58,237,0.10);border:1.5px dashed rgba(124,58,237,0.35);border-radius:10px;color:var(--purple);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s">
+        ＋ 새 항목 추가
+      </button>
+      <div id="add-cf-form" style="display:none;margin-top:10px;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px;display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">항목명</div>
+            <input id="acf_name" type="text" placeholder="예) 삼성카드 가전 할부" maxlength="20" style="${fieldSt}">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">월 금액 (원)</div>
+            <input id="acf_amount" type="number" placeholder="0" style="${fieldSt}">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">종류</div>
+            <select id="acf_kind" onchange="_onAddCfKindChange()" style="${selSt}">
+              <option value="fix">고정지출</option>
+              <option value="installment">할부 (기간있음)</option>
+              <option value="save">저축</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">카드/뱃지</div>
+            <select id="acf_badge" style="${selSt}">
+              <option value="정기">정기</option>
+              <option value="삼성카드">삼성카드</option>
+              <option value="현대카드">현대카드</option>
+              <option value="현금">현금</option>
+              <option value="저축">저축</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">납부일 (99=말일)</div>
+            <input id="acf_day" type="number" min="1" max="99" value="99" style="${fieldSt}">
+          </div>
+        </div>
+        <div id="acf_install_row" style="display:none;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:10px;margin-bottom:8px">
+          <div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:6px">할부 정보</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div>
+              <div style="font-size:10px;color:var(--sub);margin-bottom:3px">총 개월수</div>
+              <input id="acf_months" type="number" min="1" placeholder="12" style="${fieldSt}">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--sub);margin-bottom:3px">시작 연도</div>
+              <input id="acf_startyr" type="number" value="${yr}" style="${fieldSt}">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--sub);margin-bottom:3px">시작 월</div>
+              <input id="acf_startmo" type="number" min="1" max="12" value="${mo}" style="${fieldSt}">
+            </div>
+          </div>
+        </div>
+        <button onclick="addCustomCfItem()"
+          style="width:100%;height:38px;background:var(--purple);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+          추가
+        </button>
+      </div>
+    </div>`;
+
   const groups = [
     { label: '💚 수입',            kinds: ['income'],    color: 'var(--green)' },
     { label: '📋 정기지출 · 저축', kinds: ['fix','save'], color: 'var(--sub)' },
@@ -3207,7 +3402,7 @@ function renderCfEditor() {
   ];
 
   const visibleRows = groups.map(g => {
-    const items = CASHFLOW.filter(c => g.kinds.includes(c.kind) && !isCfItemHidden(c.id));
+    const items = CASHFLOW.filter(c => g.kinds.includes(c.kind) && !c._custom && !isCfItemHidden(c.id));
     if (!items.length) return '';
 
     const rows = items.map(item => _cfEditorRow(item)).join('');
@@ -3217,6 +3412,34 @@ function renderCfEditor() {
         ${rows}
       </div>`;
   }).join('');
+
+  // 사용자 추가 항목 섹션
+  const customItems = CASHFLOW.filter(c => c._custom);
+  const customSection = customItems.length > 0 ? `
+    <div style="margin-bottom:18px;padding-top:14px;border-top:1px solid var(--border2)">
+      <div class="cfe-group-title" style="color:var(--purple)">✨ 내가 추가한 항목</div>
+      ${customItems.map(item => {
+        const expLabel = item.expires ? ` · ~${item.expires.yr}.${item.expires.mo}월` : '';
+        const moLabel  = (item.totalMonths && item.startYr != null)
+          ? (() => {
+              const cur = (yr - item.startYr) * 12 + (mo - (item.startMo ?? mo)) + 1;
+              return ` <span style="font-size:9px;background:rgba(167,139,250,.2);color:var(--purple);border-radius:3px;padding:1px 5px">${cur}/${item.totalMonths}개월차</span>`;
+            })()
+          : '';
+        return `
+          <div class="cfe-row" id="cfrow_${item.id}">
+            <div class="cfe-row-inner">
+              <div style="flex:1;min-width:0">
+                <div class="cfe-name">${item.name}${moLabel}</div>
+                <div class="cfe-detail">${item.badge ?? ''} · -${item.amount.toLocaleString()}원 · ${item.day === 99 ? '말일' : item.day + '일'}${expLabel}</div>
+              </div>
+              <button onclick="editCfItem('${item.id}')" class="cfe-btn cfe-btn-edit">✏️</button>
+              <button onclick="deleteCustomCfItem('${item.id}')"
+                style="padding:5px 10px;background:none;border:1px solid var(--red);border-radius:7px;color:var(--red);font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0">✕</button>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>` : '';
 
   // 숨긴 항목 섹션
   const hiddenItems = CASHFLOW.filter(c => isCfItemHidden(c.id));
@@ -3234,11 +3457,9 @@ function renderCfEditor() {
     </div>` : '';
 
   el.innerHTML = `
-    <div style="font-size:11px;color:var(--sub);background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:14px;line-height:1.7">
-      <strong style="color:var(--text)">기본 항목</strong>은 코드에 내장되어 완전 삭제 불가 → <strong style="color:var(--orange)">숨기기</strong>로 현금흐름에서 제외<br>
-      <strong style="color:var(--text)">사용자 추가 항목</strong>은 아래 '내가 추가한 항목'에서 ✕ 버튼으로 삭제 가능
-    </div>
+    ${addForm}
     ${visibleRows}
+    ${customSection}
     ${hiddenSection}`;
 }
 
@@ -3671,6 +3892,7 @@ function importToApp() {
   if (added > 0) switchTab('history');
 }
 
+injectCustomCfItems();
 applyAllItemConfigs();
 initLoanBalances();
 updateUI(); // applyBalVis() is called inside updateUI()
