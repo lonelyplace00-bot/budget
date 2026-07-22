@@ -664,10 +664,9 @@
     <!-- 수입 입력 -->
     <div id="incPanel" class="input-card" style="display:none">
       <div class="cat-chips" id="incCats">
-        <button class="cat-chip sel" onclick="selIncCat(this,'🎬','촬영감독')">🎬 촬영감독</button>
-        <button class="cat-chip" onclick="selIncCat(this,'💼','프리랜서')">💼 프리랜서</button>
+        <button class="cat-chip sel" onclick="selIncCat(this,'💼','월급')">💼 월급</button>
+        <button class="cat-chip" onclick="selIncCat(this,'🎯','프리랜서')">🎯 프리랜서</button>
         <button class="cat-chip" onclick="selIncCat(this,'🏠','임대수입')">🏠 임대수입</button>
-        <button class="cat-chip" onclick="selIncCat(this,'📦','판매')">📦 판매</button>
         <button class="cat-chip" onclick="selIncCat(this,'💰','기타수입')">💰 기타수입</button>
       </div>
       <div class="inp-row">
@@ -1020,37 +1019,6 @@
     </div>
   </div>
 
-  <!-- 새 항목 추가 -->
-  <div class="section" style="padding-top:0">
-    <button class="add-form-toggle" id="addFormToggle" onclick="toggleAddForm()">＋ 새 할부 / 고정지출 추가</button>
-    <div id="addFormBody" style="display:none;margin-top:8px">
-      <div class="add-fixed-card">
-        <div class="hint">새 할부나 구독, 대출이 생겼을 때 입력하면 예산에서 자동 차감됩니다.</div>
-        <div class="field-row">
-          <input class="inp-sm" id="fixName" type="text" placeholder="항목명 (예: 아이폰 할부)" maxlength="20">
-          <input class="inp-sm" id="fixAmt" type="number" placeholder="월 납부액" style="max-width:130px">
-        </div>
-        <div class="field-row">
-          <input class="inp-sm" id="fixDate" type="text" placeholder="납부일 (예: 15일, 말일)" maxlength="6" style="max-width:120px">
-          <select class="sel-sm" id="fixType">
-            <option value="할부">할부</option>
-            <option value="대출">대출</option>
-            <option value="정기결제">정기결제</option>
-            <option value="저축">저축</option>
-          </select>
-          <input class="inp-sm" id="fixMonths" type="number" placeholder="남은 개월 (선택)" style="max-width:140px">
-        </div>
-        <div class="field-row">
-          <input class="inp-sm" id="fixRate" type="number" placeholder="금리 % (선택)" step="0.1" style="max-width:120px">
-          <input class="inp-sm" id="fixMemo" type="text" placeholder="메모 (선택)" maxlength="20">
-        </div>
-        <div class="field-row">
-          <button class="add-fixed-btn" onclick="addFixed()">추가하기</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="spacer"></div>
   </div>
 
@@ -1234,7 +1202,7 @@ function applyBalVis() {
   if (eye) eye.textContent = balHidden ? '✓' : '○';
 }
 let payMethod = '현금';
-let incCatIcon = '🎬', incCatName = '촬영감독';
+let incCatIcon = '💼', incCatName = '월급';
 let inputMode = 'exp'; // 'exp' | 'inc'
 
 // 전체 항목 (지출 + 수입) 월별 저장
@@ -2546,9 +2514,14 @@ function changeMonth(d) {
   updateUI();
 }
 
+let _lastScrollTime = 0;
+document.addEventListener('scroll', () => { _lastScrollTime = Date.now(); }, true);
+document.addEventListener('touchmove', () => { _lastScrollTime = Date.now(); }, true);
+
 function switchTab(name) {
   const activePanel = document.querySelector('.tab-panel.active');
   if (activePanel && activePanel.id === 'tab-' + name) {
+    if (Date.now() - _lastScrollTime < 500) return; // 스크롤 중 오터치 무시
     activePanel.scrollTo({ top: 0, behavior: 'smooth' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
@@ -3084,6 +3057,26 @@ function deleteCustomCfItem(id) {
   updateUI();
 }
 
+function _daySelectHtml(id, val, st) {
+  const days = Array.from({length:31},(_,i)=>`<option value="${i+1}"${val===i+1?` selected`:''}>${i+1}일</option>`).join('');
+  return `<select id="${id}" style="${st}"><option value="99"${val===99?` selected`:''}>말일</option>${days}</select>`;
+}
+
+function _badgeOptionsFor(kind) {
+  if (kind === 'save')        return ['저축','현금'];
+  if (kind === 'installment') return ['삼성카드','현대카드','현금','정기'];
+  return ['정기','삼성카드','현대카드','현금']; // fix
+}
+
+function _onAddCfBadgeKindChange() {
+  const kind = document.getElementById('acf_kind')?.value;
+  const badgeSel = document.getElementById('acf_badge');
+  if (!badgeSel) return;
+  const opts = _badgeOptionsFor(kind);
+  badgeSel.innerHTML = opts.map((o,i) => `<option value="${o}">${o}</option>`).join('');
+  _onAddCfKindChange();
+}
+
 function toggleAddCfForm() {
   const f = document.getElementById('add-cf-form');
   if (!f) return;
@@ -3356,7 +3349,7 @@ function renderCfEditor() {
             </select>
           </div>
           <div>
-            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">카드/뱃지</div>
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">결제수단</div>
             <select id="acf_badge" style="${selSt}">
               <option value="정기">정기</option>
               <option value="삼성카드">삼성카드</option>
@@ -3366,8 +3359,8 @@ function renderCfEditor() {
             </select>
           </div>
           <div>
-            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">납부일 (99=말일)</div>
-            <input id="acf_day" type="number" min="1" max="99" value="99" style="${fieldSt}">
+            <div style="font-size:10px;color:var(--sub);margin-bottom:3px">납부일</div>
+            ${_daySelectHtml('acf_day', 99, selSt)}
           </div>
         </div>
         <div id="acf_install_row" style="display:none;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:10px;margin-bottom:8px">
@@ -3537,9 +3530,18 @@ function editCfItem(id) {
   const effectiveDay = customDaysMap[id] ?? item.day;
   const dayField = `
     <div style="display:flex;flex-direction:column;gap:3px">
-      <label style="font-size:10px;color:var(--sub)">납부일 (1~31, 99=말일)</label>
-      <input id="cfe_day_${id}" type="number" min="1" max="99" value="${effectiveDay}" style="${fieldStyle}">
+      <label style="font-size:10px;color:var(--sub)">납부일</label>
+      ${_daySelectHtml('cfe_day_' + id, effectiveDay, fieldStyle)}
     </div>`;
+
+  const badgeOpts = ['정기','삼성카드','현대카드','현금','저축','대출','수입'];
+  const badgeField = !isIncome && !isCard ? `
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:var(--sub)">결제수단</label>
+      <select id="cfe_badge_${id}" style="${fieldStyle}">
+        ${badgeOpts.map(b => `<option value="${b}"${item.badge===b?' selected':''}>${b}</option>`).join('')}
+      </select>
+    </div>` : '';
 
   const kindField = !isCard ? `
     <div style="display:flex;flex-direction:column;gap:3px">
@@ -3559,6 +3561,7 @@ function editCfItem(id) {
           <label style="font-size:10px;color:var(--sub)">이름</label>
           <input id="cfe_name_${id}" type="text" value="${item.name}" style="${fieldStyle}">
         </div>
+        ${badgeField}
         ${kindField}
         ${dayField}
         ${amtField}
@@ -3592,20 +3595,23 @@ function saveCfItem(id) {
   const rateEl  = document.getElementById('cfe_rate_' + id);
   const prinEl  = document.getElementById('cfe_prin_' + id);
 
-  const kindEl = document.getElementById('cfe_kind_' + id);
-  const dayEl  = document.getElementById('cfe_day_'  + id);
+  const kindEl  = document.getElementById('cfe_kind_'  + id);
+  const dayEl   = document.getElementById('cfe_day_'   + id);
+  const badgeEl = document.getElementById('cfe_badge_' + id);
   const cfg = {};
-  const name = nameEl?.value?.trim();
-  const amt  = amtEl  ? parseInt(amtEl.value)    : NaN;
-  const rate = rateEl ? parseFloat(rateEl.value) : NaN;
-  const prin = prinEl ? parseInt(prinEl.value)   : NaN;
-  const kind = kindEl?.value;
+  const name  = nameEl?.value?.trim();
+  const amt   = amtEl  ? parseInt(amtEl.value)    : NaN;
+  const rate  = rateEl ? parseFloat(rateEl.value) : NaN;
+  const prin  = prinEl ? parseInt(prinEl.value)   : NaN;
+  const kind  = kindEl?.value;
+  const badge = badgeEl?.value;
 
-  if (name && name !== def.name)              cfg.name      = name;
-  if (!isNaN(amt)  && amt  !== def.amount)    cfg.amount    = amt;
-  if (!isNaN(rate) && rate !== def.rate)      cfg.rate      = rate;
-  if (!isNaN(prin) && prin !== def.principal) cfg.principal = prin;
-  if (kind && kind !== def.kind)              cfg.kind      = kind;
+  if (name  && name  !== def.name)              cfg.name      = name;
+  if (!isNaN(amt)  && amt  !== def.amount)      cfg.amount    = amt;
+  if (!isNaN(rate) && rate !== def.rate)        cfg.rate      = rate;
+  if (!isNaN(prin) && prin !== def.principal)   cfg.principal = prin;
+  if (kind  && kind  !== def.kind)              cfg.kind      = kind;
+  if (badge && badge !== def.badge)             cfg.badge     = badge;
 
   // 납부일 저장 (cf_custom_days)
   if (dayEl) {
