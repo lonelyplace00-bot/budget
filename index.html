@@ -578,8 +578,13 @@
     <button class="reset-btn" onclick="resetMonth()">초기화</button>
   </div>
 
-  <div class="balance-bar">
-    <div class="balance-label">남은 자유 예산</div>
+  <div class="balance-bar" onclick="toggleBalVis()" style="cursor:pointer;user-select:none">
+    <div class="balance-label" style="display:flex;align-items:center;justify-content:space-between">
+      남은 자유 예산
+      <span id="balHideBadge" style="font-size:10px;font-weight:600;display:flex;align-items:center;gap:4px;color:var(--sub2);background:var(--card2);border:1px solid var(--border2);border-radius:99px;padding:3px 10px">
+        <span id="balEye">○</span> 금액 숨김
+      </span>
+    </div>
     <div class="balance-amount pos" id="balAmt">+748,710원</div>
     <div class="balance-sub" id="balSub">식비 · 생활비 · 기타 변동지출</div>
   </div>
@@ -1180,6 +1185,37 @@ const BASE_INCOME = 3900000; // 고정 수입 (월급 + 세입자)
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 const _initDate = new Date(); let yr = _initDate.getFullYear(), mo = _initDate.getMonth();
 let catIcon = '🍚', catName = '식비';
+let balHidden = localStorage.getItem('bal_hidden') === '1';
+
+function toggleBalVis() {
+  balHidden = !balHidden;
+  localStorage.setItem('bal_hidden', balHidden ? '1' : '0');
+  applyBalVis();
+}
+
+function applyBalVis() {
+  const MASK = '• • • •';
+  // 마스킹 대상 id 목록
+  ['balAmt','botUsed','botRemain','progUsed','progTotal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!el.dataset.real) el.dataset.real = el.textContent;
+    el.textContent = balHidden ? MASK : el.dataset.real;
+  });
+  // 수입/고정지출 카드
+  document.querySelectorAll('.sum-val').forEach(el => {
+    if (!el.dataset.real) el.dataset.real = el.textContent;
+    el.textContent = balHidden ? MASK : el.dataset.real;
+  });
+  // 뱃지 스타일
+  const badge = document.getElementById('balHideBadge');
+  if (badge) {
+    badge.style.color       = balHidden ? 'var(--blue)' : 'var(--sub2)';
+    badge.style.borderColor = balHidden ? 'var(--blue)' : 'var(--border2)';
+  }
+  const eye = document.getElementById('balEye');
+  if (eye) eye.textContent = balHidden ? '✓' : '○';
+}
 let payMethod = '현금';
 let incCatIcon = '🎬', incCatName = '촬영감독';
 let inputMode = 'exp'; // 'exp' | 'inc'
@@ -1216,27 +1252,36 @@ function updateUI() {
   const pct = budget > 0 ? Math.min(100, varExpTotal/budget*100) : 100;
 
   const ba = document.getElementById('balAmt');
-  ba.textContent = (remain >= 0 ? '+' : '-') + fmt(Math.abs(remain));
+  ba.dataset.real = (remain >= 0 ? '+' : '-') + fmt(Math.abs(remain));
+  ba.textContent = ba.dataset.real;
   ba.className = 'balance-amount ' + (remain > budget*.3 ? 'pos' : remain > 0 ? 'warn' : 'neg');
   document.getElementById('balSub').textContent = remain < 0 ? '⚠️ 예산 초과 상태' : '식비 · 생활비 · 기타 변동지출';
 
   const pf = document.getElementById('progFill');
   pf.style.width = pct + '%';
   pf.style.background = pct < 60 ? 'var(--green)' : pct < 90 ? 'var(--orange)' : 'var(--red)';
-  document.getElementById('progUsed').textContent = '지출 ' + fmt(varExpTotal);
-  document.getElementById('progTotal').textContent = '예산 ' + fmt(budget);
+  const progUsed = document.getElementById('progUsed');
+  progUsed.dataset.real = '지출 ' + fmt(varExpTotal); progUsed.textContent = progUsed.dataset.real;
+  const progTotal = document.getElementById('progTotal');
+  progTotal.dataset.real = '예산 ' + fmt(budget); progTotal.textContent = progTotal.dataset.real;
 
-  document.getElementById('botUsed').textContent = fmt(varExpTotal);
+  const botUsed = document.getElementById('botUsed');
+  botUsed.dataset.real = fmt(varExpTotal); botUsed.textContent = botUsed.dataset.real;
   const br = document.getElementById('botRemain');
-  br.textContent = (remain < 0 ? '-' : '') + fmt(Math.abs(remain));
+  br.dataset.real = (remain < 0 ? '-' : '') + fmt(Math.abs(remain));
+  br.textContent = br.dataset.real;
   br.style.color = remain >= 0 ? 'var(--green)' : 'var(--red)';
 
   // 수입이 있으면 헤더 수입 카드 업데이트
   const sumInc = document.querySelector('.sum-card:first-child .sum-val');
   if (sumInc) {
     const total = BASE_INCOME + varIncTotal;
-    sumInc.textContent = (total/10000).toFixed(0)+'만원'+(varIncTotal>0?` (+${fmt(varIncTotal)})` :'');
+    sumInc.dataset.real = (total/10000).toFixed(0)+'만원'+(varIncTotal>0?` (+${fmt(varIncTotal)})` :'');
+    sumInc.textContent = sumInc.dataset.real;
   }
+  // 고정지출 카드 data-real 초기화 (정적값 보존)
+  const sumFix = document.querySelector('.sum-card:last-child .sum-val');
+  if (sumFix && !sumFix.dataset.real) sumFix.dataset.real = sumFix.textContent;
 
   const today = new Date().toLocaleDateString('ko-KR');
   const todayItems = entries.filter(e => e.date === today);
@@ -1280,6 +1325,8 @@ function updateUI() {
 
   // 자동 분석 (plan 탭 컨테이너가 있을 때만)
   if (document.getElementById('auto-summary-bar')) renderAutoAnalysis();
+
+  applyBalVis();
 }
 
 // ─── 주간/일별 탭 ─────────────────────────────────────────
@@ -2088,7 +2135,16 @@ function renderCashflow() {
           const total = item.principal + interest;
           const payLabel = isDone ? '다음달 납부 예정' : '이번달 납부 예정';
           const intBadge = manInt !== null ? `<span style="font-size:9px;color:var(--orange);background:rgba(251,146,60,.15);border-radius:3px;padding:1px 3px;margin-left:2px">수동</span>` : '';
-          balText = `잔액 ${balFmt} · <span style="color:var(--sub2)">${payLabel}</span> 원금 ${item.principal.toLocaleString()} + 이자 ${interest.toLocaleString()}${intBadge} = <strong style="color:var(--red)">${total.toLocaleString()}원</strong>`;
+          const manPayBal = loadManualPay(item.id);
+          // 예산 > 실납부 → 잉여 (모을 수 있는 돈) / 수동납부 < 예정 → 미납
+          const surplus   = (manPayBal === null && item.amount > total) ? item.amount - total : 0;
+          const shortfall = (manPayBal !== null && manPayBal < total)   ? total - manPayBal   : 0;
+          const trailStr  = surplus > 0
+            ? ` · <span style="color:var(--green);font-weight:600">💰 잉여 ${surplus.toLocaleString()}원</span>`
+            : shortfall > 0
+            ? ` · <span style="color:var(--orange);font-weight:600">미납 ${shortfall.toLocaleString()}원</span>`
+            : '';
+          balText = `잔액 ${balFmt} · <span style="color:var(--sub2)">${payLabel}</span> 원금 ${item.principal.toLocaleString()} + 이자 ${interest.toLocaleString()}${intBadge} = <strong style="color:var(--red)">${total.toLocaleString()}원</strong>${trailStr}`;
         } else if (item.rate && item.loanKind === 'partial-principal') {
           const manInt = loadManualInterest(item.id);
           const interest = manInt !== null ? manInt : calcInterest(bal, item.rate);
@@ -2473,6 +2529,12 @@ function changeMonth(d) {
 }
 
 function switchTab(name) {
+  const activePanel = document.querySelector('.tab-panel.active');
+  if (activePanel && activePanel.id === 'tab-' + name) {
+    activePanel.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
   const tabs = ['add','analysis','plan','manage'];
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabs[i]===name));
   document.querySelectorAll('.bot-nav-btn').forEach((b,i) => b.classList.toggle('active', tabs[i]===name));
@@ -3250,6 +3312,14 @@ function editCfItem(id) {
 
   const hasOverride = loadItemConfig(id) !== null;
 
+  const customDaysMap = loadCustomDays();
+  const effectiveDay = customDaysMap[id] ?? item.day;
+  const dayField = `
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <label style="font-size:10px;color:var(--sub)">납부일 (1~31, 99=말일)</label>
+      <input id="cfe_day_${id}" type="number" min="1" max="99" value="${effectiveDay}" style="${fieldStyle}">
+    </div>`;
+
   const kindField = !isCard ? `
     <div style="display:flex;flex-direction:column;gap:3px">
       <label style="font-size:10px;color:var(--sub)">분류</label>
@@ -3269,6 +3339,7 @@ function editCfItem(id) {
           <input id="cfe_name_${id}" type="text" value="${item.name}" style="${fieldStyle}">
         </div>
         ${kindField}
+        ${dayField}
         ${amtField}
         ${rateField}
         ${prinField}
@@ -3301,6 +3372,7 @@ function saveCfItem(id) {
   const prinEl  = document.getElementById('cfe_prin_' + id);
 
   const kindEl = document.getElementById('cfe_kind_' + id);
+  const dayEl  = document.getElementById('cfe_day_'  + id);
   const cfg = {};
   const name = nameEl?.value?.trim();
   const amt  = amtEl  ? parseInt(amtEl.value)    : NaN;
@@ -3313,6 +3385,18 @@ function saveCfItem(id) {
   if (!isNaN(rate) && rate !== def.rate)      cfg.rate      = rate;
   if (!isNaN(prin) && prin !== def.principal) cfg.principal = prin;
   if (kind && kind !== def.kind)              cfg.kind      = kind;
+
+  // 납부일 저장 (cf_custom_days)
+  if (dayEl) {
+    const newDay = parseInt(dayEl.value);
+    const cfItem = CASHFLOW.find(c => c.id === id);
+    const cdMap = loadCustomDays();
+    if (!isNaN(newDay) && newDay >= 1 && newDay <= 99) {
+      if (cfItem && newDay === cfItem.day) delete cdMap[id];
+      else cdMap[id] = newDay;
+      saveCustomDays(cdMap);
+    }
+  }
 
   saveItemConfig(id, Object.keys(cfg).length > 0 ? cfg : null);
   applyItemConfig(id);
@@ -3589,7 +3673,7 @@ function importToApp() {
 
 applyAllItemConfigs();
 initLoanBalances();
-updateUI();
+updateUI(); // applyBalVis() is called inside updateUI()
 </script>
 <script>
 (function(){
